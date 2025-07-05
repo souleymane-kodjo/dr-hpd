@@ -38,7 +38,29 @@ const mockKPIs: KpiData[] = [
     value: 32,
     unit: 'min',
     change: '-5min'
-  }
+  },
+  {
+    id: 'avg-discharge-time',
+    label: 'Temps de sortie',
+    value: 1.5,
+    unit: 'h',
+    change: '+0.2h'
+  },
+  {
+    id: 'readmission-rate',
+    label: 'Taux de réadmission',
+    value: 12,
+    unit: '%',
+    change: '-1%'
+  },
+  //new
+  {
+    id: 'patient-satisfaction',
+    label: 'Satisfaction patient',
+    value: 85,
+    unit: '%',
+    change: '+3%'
+  },
 ];
 
 // Données mockées pour les patients hospitalisés
@@ -148,5 +170,37 @@ export const getHospitalizationTrends = async () => {
   return {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     data: [35, 42, 38, 45, 50, 47]
+  };
+};
+
+
+//getGraphData
+export const getGraphData = async () => {
+  console.log("Récupération des données graphiques...");
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  return {
+    hospitalizations: [
+      { label: 'Jan', value: 30 },
+      { label: 'Feb', value: 25 },
+      { label: 'Mar', value: 40 },
+      { label: 'Apr', value: 35 },
+      { label: 'May', value: 50 },
+      { label: 'Jun', value: 45 }
+    ],
+    bedOccupancy: [
+      { label: 'Jan', value: 70 },
+      { label: 'Feb', value: 75 },
+      { label: 'Mar', value: 80 },
+      { label: 'Apr', value: 85 },
+      { label: 'May', value: 90 },
+      { label: 'Jun', value: 95 }
+    ],
+    hospitalizationReasons: [
+      { label: 'Cardiology', value: 20 },
+      { label: 'Dermatology', value: 15 },
+      { label: 'Rheumatology', value: 10 },
+      { label: 'Neurology', value: 5 }
+    ]
   };
 };

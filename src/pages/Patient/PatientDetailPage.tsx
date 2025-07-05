@@ -2,7 +2,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
-import { Box, Button, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Typography } from '@mui/material';
 import { getPatientById, updatePatient } from '../../services/patientService';
 import { useState } from 'react';
 import EditPatientModal from '../../components/patient/EditPatientModal';
@@ -44,18 +44,18 @@ const PatientDetailPage = () => {
       </Box>
       <Card>
         <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
+            <Box>
               <Typography variant="h6">Informations Personnelles</Typography>
               <Typography><strong>Âge:</strong> {patient.age} ans</Typography>
               <Typography><strong>Sexe:</strong> {patient.sexe === 'M' ? 'Masculin' : 'Féminin'}</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            </Box>
+            <Box>
               <Typography variant="h6">Informations Médicales</Typography>
               <Typography><strong>Statut:</strong> {patient.statut}</Typography>
               <Typography><strong>Diagnostic:</strong> {patient.diagnosticActuel}</Typography>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </CardContent>
       </Card>
 

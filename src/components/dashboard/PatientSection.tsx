@@ -9,6 +9,16 @@ import {
   Select,
   MenuItem,
   Pagination,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Avatar,
+  Button,
+  Chip
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -16,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useMemo, useState } from 'react';
 import { getPatients } from '../../services/patientService';
+import type { Patient } from '../../types';
 
 
 // ---------- PATIENT SECTION ----------
@@ -31,7 +42,11 @@ const PatientSection = () => {
   });
 
   const specialties = useMemo(() => {
-    const all = patients.map((p: Patient) => p.specialty);
+    if (!patients || patients.length === 0) return [];
+
+    const all = patients
+      .filter((p: Patient) => p && p.specialty) // Filtrer les patients valides avec spécialité
+      .map((p: Patient) => p.specialty);
     return Array.from(new Set(all)).sort();
   }, [patients]);
 
@@ -42,7 +57,16 @@ const PatientSection = () => {
   //     (specialtyFilter === '' || patient.specialty === specialtyFilter)
   // );
   const filteredPatients = patients.filter((patient: Patient) => {
-    return patients ;
+    // Vérifications de sécurité pour éviter les erreurs
+    if (!patient || !patient.name) return false;
+
+    const nameMatch = patient.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const bedNumberMatch = patient.bedNumber !== undefined &&
+                          patient.bedNumber.toString().includes(searchTerm);
+    const specialtyMatch = specialtyFilter === '' ||
+                          (patient.specialty && patient.specialty === specialtyFilter);
+
+    return (nameMatch || bedNumberMatch) && specialtyMatch;
   });
 
   const paginatedPatients = filteredPatients.slice(
@@ -99,7 +123,7 @@ const PatientSection = () => {
         </Box>
       </Box>
 
-      {/* <TableContainer component={Paper} sx={{ mb: 2, borderRadius: 2 }}>
+      <TableContainer component={Paper} sx={{ mb: 2, borderRadius: 2 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -123,20 +147,20 @@ const PatientSection = () => {
                         height: 40,
                         fontSize: 14
                       }}>
-                        {patient.name.split(' ').map(n => n[0]).join('')}
+                        {patient.name ? patient.name.split(' ').map(n => n[0]).join('') : '?'}
                       </Avatar>
                       <Box>
-                        <Typography fontWeight={500}>{patient.name}</Typography>
+                        <Typography fontWeight={500}>{patient.name || 'N/A'}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {patient.age} ans
+                          {patient.age ? `${patient.age} ans` : 'Âge non renseigné'}
                         </Typography>
                       </Box>
                     </Box>
                   </TableCell>
-                  <TableCell>patient.admissionDate</TableCell>
+                  <TableCell>{patient.admissionDate || 'Non renseignée'}</TableCell>
                   <TableCell>
                     <Chip
-                      label={patient.specialty}
+                      label={patient.specialty || 'Non définie'}
                       color="primary"
                       size="small"
                     />
@@ -160,7 +184,7 @@ const PatientSection = () => {
             )}
           </TableBody>
         </Table>
-      </TableContainer> */}
+      </TableContainer>
 
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="body2" color="text.secondary">

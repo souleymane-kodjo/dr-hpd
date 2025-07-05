@@ -9,10 +9,10 @@ export interface User {
 export interface Patient {
   id: string;
   nomComplet: string;
-  name : string; // Nom complet du patient
+  name: string; // Nom complet du patient (alias de nomComplet)
   age: number;
-  admissionDate : string; // Date d'admission au format ISO
-  specialty : string ; // Spécialité médicale
+  admissionDate: string; // Date d'admission au format ISO ou YYYY-MM-DD
+  specialty: string; // Spécialité médicale
   bedNumber?: number; // Numéro de lit (optionnel)
   // Ajout de nouveaux champs pour le dossier médical
   sexe: 'M' | 'F';
@@ -40,3 +40,16 @@ export interface HospitalizationTrend {
   labels: string[];
   data: number[];
 }
+
+export interface ChartData {
+  label: string;
+  value: number;
+}
+
+
+export interface GraphData {
+  hospitalizations: ChartData[];
+  bedOccupancy: ChartData[];
+  hospitalizationReasons: ChartData[];
+}
+

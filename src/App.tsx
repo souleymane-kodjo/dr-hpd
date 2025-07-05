@@ -7,6 +7,7 @@ import DashboardPage from './pages/Dashboard/DashboardPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import PatientPage from './pages/Patient/PatientPage';
 import PatientDetailPage from './pages/Patient/PatientDetailPage';
+import PatientMedicalRecordPage from './pages/Patient/PatientMedicalRecordPage';
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/patients" element={<PatientPage />} />
             <Route path="/patients/:patientId" element={<PatientDetailPage />} /> {/* Nouvelle route */}
+            <Route path="/patients/:patientId/medical-record" element={<PatientMedicalRecordPage />} />
+
             {/* Ajouter ici les autres routes privées :
               <Route path="/hospitalisations" element={<HospitalisationPage />} />
             */}

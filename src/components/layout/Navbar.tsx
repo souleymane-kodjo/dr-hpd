@@ -9,6 +9,7 @@ import {
   MenuItem,
   Badge,
   Tooltip,
+  Divider,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -18,9 +19,18 @@ import { useAuthStore } from '../../store/authStore';
 
 const drawerWidth = 240;
 
+interface AppBarProps {
+  open?: boolean;
+}
+
+interface NavbarProps {
+  open: boolean;
+  toggleDrawer: () => void;
+}
+
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+})<AppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
   backgroundColor: theme.palette.primary.main,
   color: '#fff',
@@ -38,12 +48,12 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Navbar = ({ open, toggleDrawer }) => {
+const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
   const { user, logout } = useAuthStore();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -123,14 +133,34 @@ const Navbar = ({ open, toggleDrawer }) => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem disabled>
-              {user?.nom || 'Utilisateur'}
+            <MenuItem>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+
+                {user?.nom || 'Utilisateur'}
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    backgroundColor: 'success.main',
+                    borderRadius: '50%',
+                  }}
+                />
+              </Box>
             </MenuItem>
-            {/* Role */}
+
             <MenuItem disabled>
-              <span className='text-secondary text-sm card-text text-success text-center'>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'success.dark',
+                  fontWeight: 600,
+                  textAlign: 'left',
+                  width: '100%'
+                }}
+              >
                 {user?.roles ? `${user.roles}` : 'Docteur'}
-                </span>
+              </Typography>
+              <Divider sx={{ my: 1 }} />
             </MenuItem>
             <MenuItem onClick={handleClose}>Mon Profil</MenuItem>
             <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
