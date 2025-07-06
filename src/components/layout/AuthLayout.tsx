@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const AuthLayout = () => {
   // Potentiellement un conteneur MUI pour centrer le contenu
-  return <Outlet />; 
+  return <Outlet />;
 };
 
 export default AuthLayout;

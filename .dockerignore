@@ -41,3 +41,27 @@ logs
 Dockerfile
 docker-compose.yml
 .dockerignore
+# .dockerignore
+
+# Dépendances locales
+node_modules
+
+# Fichiers de build locaux (au cas où vous en auriez)
+dist
+build
+
+# Fichiers de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers de configuration de l'éditeur
+.vscode
+.idea
+
+# Fichiers système
+.DS_Store
+
+# Fichiers d'environnement locaux
+.env.local
+.env.development.local

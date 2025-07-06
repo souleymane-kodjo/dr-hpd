@@ -22,9 +22,10 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import HotelIcon from '@mui/icons-material/Hotel';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { Link } from 'react-router-dom';
 import { useState, useRef } from 'react';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, BedIcon } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
 const drawerWidth = 240;
@@ -33,6 +34,8 @@ const navItems = [
   { text: 'Tableau de bord', icon: <DashboardIcon />, path: '/' },
   { text: 'Patients', icon: <PeopleIcon />, path: '/patients' },
   { text: 'Hospitalisations', icon: <HotelIcon />, path: '/hospitalisations' },
+  { text: 'Planifier Hospitalisation', icon: <EventAvailableIcon />, path: '/hospitalisations/planifier' },
+    { text: 'Gestion des Lits', icon: <BedIcon />, path: '/lits' }, // Ajouté
 ];
 
 interface SidebarProps {
@@ -225,7 +228,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
           {open && (
             <Box>
               <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center' }}>
-                {currentUser?.nom } 
+                {currentUser?.nom }
                 <Box component="span" sx={{ color: 'success.main', ml: 0.5 }}>●</Box>
               </Typography>
               <Typography variant="caption" color="text.secondary">

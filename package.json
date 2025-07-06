@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && netlify deploy --prod"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -20,7 +21,9 @@
     "@tanstack/react-query-devtools": "^5.81.5",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^0.525.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.60.0",

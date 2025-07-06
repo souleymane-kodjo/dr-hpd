@@ -72,10 +72,11 @@ const mockHospitalizedPatients: Patient[] = [
       admissionDate: '2023-05-15',
       specialty: 'Dermatologie',
       bedNumber: 101,
-      nomComplet: "",
+      nomComplet: "Mamadou Lamine Faye",
       sexe: "M",
-      diagnosticActuel: "",
-      statut: "Hospitalisé"
+      diagnosticActuel: "Eczéma chronique",
+      statut: "Hospitalisé",
+      matricule: "PAT001"
   },
   {
       id: 'pat-003',
@@ -84,10 +85,11 @@ const mockHospitalizedPatients: Patient[] = [
       admissionDate: '2023-05-16',
       specialty: 'Rhumatologie',
       bedNumber: 102,
-      nomComplet: "",
+      nomComplet: "Ousmane Fall",
       sexe: "M",
-      diagnosticActuel: "",
-      statut: "Hospitalisé"
+      diagnosticActuel: "Arthrite rhumatoïde",
+      statut: "Hospitalisé",
+      matricule: "PAT003"
   },
   {
       id: 'pat-005',
@@ -96,10 +98,11 @@ const mockHospitalizedPatients: Patient[] = [
       admissionDate: '2023-05-17',
       specialty: 'Dermatologie',
       bedNumber: 103,
-      nomComplet: "",
+      nomComplet: "Ibrahima Sow",
       sexe: "M",
-      diagnosticActuel: "",
-      statut: "Hospitalisé"
+      diagnosticActuel: "Psoriasis",
+      statut: "Hospitalisé",
+      matricule: "PAT005"
   },
   {
       id: 'pat-007',
@@ -108,10 +111,11 @@ const mockHospitalizedPatients: Patient[] = [
       admissionDate: '2023-05-18',
       specialty: 'Dermatologie',
       bedNumber: 104,
-      nomComplet: "",
+      nomComplet: "Cheikh Mbaye",
       sexe: "M",
-      diagnosticActuel: "",
-      statut: "Hospitalisé"
+      diagnosticActuel: "Dermatite atopique",
+      statut: "Hospitalisé",
+      matricule: "PAT007"
   },
   {
       id: 'pat-009',
@@ -120,10 +124,11 @@ const mockHospitalizedPatients: Patient[] = [
       admissionDate: '2023-05-19',
       specialty: 'Rhumatologie',
       bedNumber: 105,
-      nomComplet: "",
+      nomComplet: "Boubacar Ndiaye",
       sexe: "M",
-      diagnosticActuel: "",
-      statut: "Hospitalisé"
+      diagnosticActuel: "Polyarthrite rhumatoïde",
+      statut: "Hospitalisé",
+      matricule: "PAT009"
   }
 ];
 

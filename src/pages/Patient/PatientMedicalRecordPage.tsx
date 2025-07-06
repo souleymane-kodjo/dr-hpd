@@ -7,7 +7,8 @@ import {
   Tabs,
   Tab,
   Button,
-  Chip
+  Chip,
+  Avatar
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -28,6 +29,7 @@ import { getMedicalRecordsByPatient } from '../../services/medicalRecordService'
 import type { MedicalRecord } from '../../services/medicalRecordService';
 import { getPatients } from '../../services/patientService';
 import type { Patient } from '../../types';
+import { CreditCardIcon } from 'lucide-react';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -54,7 +56,6 @@ const PatientMedicalRecordPage = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
-
   // Récupération des données patient
   const { data: patients = [], isLoading: isLoadingPatients } = useQuery({
     queryKey: ['patients'],
@@ -222,6 +223,11 @@ const PatientMedicalRecordPage = () => {
             label="Historique"
             iconPosition="start"
           />
+          <Tab
+            icon={<CreditCardIcon />}
+            label="Carte Patient"
+            iconPosition="start"
+            />
         </Tabs>
       </Paper>
 
@@ -438,6 +444,181 @@ const PatientMedicalRecordPage = () => {
             <Typography variant="body2" color="text.secondary">
               L'historique des consultations sera disponible prochainement
             </Typography>
+          </Paper>
+        </Box>
+      </TabPanel>
+
+      {/* Carte Patient */}
+      <TabPanel value={activeTab} index={3}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
+          <Typography variant="h5" fontWeight={600} gutterBottom>
+            Carte Patient <Box component="span" sx={{ color: 'primary.main' }}>Virtuelle</Box>
+          </Typography>
+
+          {/* Carte virtuelle du patient */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+            <Paper
+              elevation={8}
+              sx={{
+                p: 4,
+                width: 400,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                borderRadius: 3,
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'url(/images/hpd-logo.png) no-repeat center',
+                  backgroundSize: '120px',
+                  opacity: 0.1,
+                  zIndex: 0
+                }
+              }}
+            >
+              {/* Header de la carte */}
+              <Box display="flex" alignItems="center" mb={3} sx={{ position: 'relative', zIndex: 1 }}>
+                <Avatar
+                  sx={{
+                    width: 70,
+                    height: 70,
+                    mr: 2,
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    fontSize: '2rem',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {selectedPatient?.name?.charAt(0) || selectedPatient?.nomComplet?.charAt(0) || 'P'}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5 }}>
+                    {selectedPatient?.name || selectedPatient?.nomComplet || 'Patient'}
+                  </Typography>
+                  <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                    Patient • {selectedPatient?.age || 'N/A'} ans
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Informations de la carte */}
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Box>
+                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                      Numéro Patient
+                    </Typography>
+                    <Typography variant="h6" fontWeight="bold">
+                      {selectedPatient?.matricule || selectedPatient?.id || 'N/A'}
+                    </Typography>
+                  </Box>
+                  <Box textAlign="right">
+                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                      Spécialité
+                    </Typography>
+                    <Typography variant="body1" fontWeight="600">
+                      {selectedPatient?.specialty || 'Médecine générale'}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                  <Box>
+                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                      Statut
+                    </Typography>
+                    <Typography variant="body1" fontWeight="600">
+                      {selectedPatient?.statut || 'Actif'}
+                    </Typography>
+                  </Box>
+                  <Box textAlign="right">
+                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                      Sexe
+                    </Typography>
+                    <Typography variant="body1" fontWeight="600">
+                      {selectedPatient?.sexe === 'M' ? 'Masculin' : selectedPatient?.sexe === 'F' ? 'Féminin' : 'N/A'}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Footer de la carte */}
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  mt={3}
+                  pt={2}
+                  sx={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}
+                >
+                  <Box>
+                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem' }}>
+                      HÔPITAL PRIVÉ DE DAKAR
+                    </Typography>
+                    <Typography variant="body2" fontWeight="600">
+                      Carte Patient Officielle
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      borderRadius: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <CreditCardIcon size={30} />
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+
+          {/* Informations supplémentaires */}
+          <Paper sx={{ p: 3, width: '100%', maxWidth: 600 }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: 'primary.main' }}>
+              Informations de la carte
+            </Typography>
+            <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: 'repeat(2, 1fr)' }} gap={2}>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                  Date d'émission
+                </Typography>
+                <Typography variant="body1">
+                  {new Date().toLocaleDateString('fr-FR')}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                  Validité
+                </Typography>
+                <Typography variant="body1">
+                  Permanente
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                  Diagnostic principal
+                </Typography>
+                <Typography variant="body1">
+                  {selectedPatient?.diagnosticActuel || 'Non renseigné'}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                  Service
+                </Typography>
+                <Typography variant="body1">
+                  {selectedPatient?.specialty || 'Médecine générale'}
+                </Typography>
+              </Box>
+            </Box>
           </Paper>
         </Box>
       </TabPanel>

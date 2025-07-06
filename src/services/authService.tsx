@@ -15,6 +15,7 @@ export const loginWithCredentials = async (email: string, pass: string): Promise
             nom: 'Dr. Mariame Diallo',
             email: 'medecin@hpd.sn',
             roles: ['MEDECIN'],
+            matricule: 'M-12345'
         };
         const mockToken = 'fake-jwt-token-string';
 

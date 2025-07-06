@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
 
   if (!isAuthenticated()) {
     // Redirige vers la page de connexion si non authentifié
-    return <Navigate to="/connexion" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Affiche le contenu de la page privée

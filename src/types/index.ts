@@ -4,6 +4,7 @@ export interface User {
   nom: string;
   email: string;
   roles: string[];
+  matricule: string;
   photoUrl?: string; // URL de la photo de profil (optionnel)
 }
 export interface Patient {
@@ -18,6 +19,7 @@ export interface Patient {
   sexe: 'M' | 'F';
   diagnosticActuel: string;
   statut: 'Hospitalisé' | 'Ambulatoire';
+  matricule: string;
 }
 // src/types/dashboard.ts
 export interface KpiData {
@@ -52,4 +54,27 @@ export interface GraphData {
   bedOccupancy: ChartData[];
   hospitalizationReasons: ChartData[];
 }
+export interface Hospitalisation {
+  id: string;
+  patientId: string;
+  patientNom: string;
+  dateAdmission: string;
+  chambre: string;
+  lit: string;
+  motif: string;
+  statut: 'En cours' | 'Sortie prévue';
+}
 
+// src/types/index.ts
+// ... (gardez les types existants)
+
+export type LitStatut = 'Libre' | 'Occupé' | 'En nettoyage' | 'En maintenance';
+
+export interface Lit {
+  id: string;
+  numeroChambre: string;
+  numeroLit: string;
+  statut: LitStatut;
+  patientId?: string;
+  patientNom?: string;
+}

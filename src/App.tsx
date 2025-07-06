@@ -7,7 +7,12 @@ import DashboardPage from './pages/Dashboard/DashboardPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import PatientPage from './pages/Patient/PatientPage';
 import PatientDetailPage from './pages/Patient/PatientDetailPage';
+//
+
 import PatientMedicalRecordPage from './pages/Patient/PatientMedicalRecordPage';
+import HospitalisationPage from './pages/Hospitalisation/HospitalisationPage';
+import PlanifierHospitalisationPage from './pages/Hospitalisation/PlanifierHospitalisationPage';
+import GestionLitsPage from './pages/lits/GestionLitsPage';
 
 function App() {
   return (
@@ -15,7 +20,7 @@ function App() {
       <Routes>
         {/* Routes publiques avec le AuthLayout */}
         <Route element={<AuthLayout />}>
-          <Route path="/connexion" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Route>
 
         {/* Routes privées avec le AppLayout */}
@@ -26,10 +31,9 @@ function App() {
             <Route path="/patients" element={<PatientPage />} />
             <Route path="/patients/:patientId" element={<PatientDetailPage />} /> {/* Nouvelle route */}
             <Route path="/patients/:patientId/medical-record" element={<PatientMedicalRecordPage />} />
-
-            {/* Ajouter ici les autres routes privées :
-              <Route path="/hospitalisations" element={<HospitalisationPage />} />
-            */}
+             <Route path="/hospitalisations" element={<HospitalisationPage />} />
+             <Route path="/hospitalisations/planifier" element={<PlanifierHospitalisationPage />} />
+            <Route path="/lits" element={<GestionLitsPage />} />
           </Route>
         </Route>
       </Routes>
