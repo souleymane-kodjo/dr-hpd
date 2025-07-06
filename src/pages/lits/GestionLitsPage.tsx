@@ -9,18 +9,25 @@ import {
   Fab,
   Tooltip,
   Chip,
-  Stack
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import { 
   Refresh as RefreshIcon,
-  Add as AddIcon 
+  Add as AddIcon,
+  TableRows as TableRowsIcon,
+  GridView as GridViewIcon
 } from '@mui/icons-material';
+import { useState } from 'react';
 import { getLits, updateLitStatus } from '../../services/litService';
+import LitsTable from '../../components/lits/LitsTable';
 import LitCard from '../../components/lits/LitCard';
 import type { LitStatut } from '../../types';
 
 const GestionLitsPage = () => {
   const queryClient = useQueryClient();
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   const { data: lits = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['lits'],
@@ -80,6 +87,23 @@ const GestionLitsPage = () => {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} alignItems="center">
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, newMode) => newMode && setViewMode(newMode)}
+            size="small"
+          >
+            <ToggleButton value="table">
+              <Tooltip title="Vue tableau">
+                <TableRowsIcon />
+              </Tooltip>
+            </ToggleButton>
+            <ToggleButton value="cards">
+              <Tooltip title="Vue cartes">
+                <GridViewIcon />
+              </Tooltip>
+            </ToggleButton>
+          </ToggleButtonGroup>
           <Chip 
             label={`Taux d'occupation: ${tauxOccupation}%`}
             color={tauxOccupation > 80 ? 'error' : tauxOccupation > 60 ? 'warning' : 'success'}
@@ -203,26 +227,36 @@ const GestionLitsPage = () => {
           <Typography variant="h5" sx={{ mb: 2 }}>
             État des lits ({lits.length} lits)
           </Typography>
-          <Box 
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(4, 1fr)'
-              },
-              gap: 3
-            }}
-          >
-            {lits.map(lit => (
-              <LitCard
-                key={lit.id}
-                lit={lit}
-                onStatusChange={handleStatusChange}
-              />
-            ))}
-          </Box>
+          
+          {viewMode === 'table' ? (
+            <LitsTable 
+              lits={lits}
+              isLoading={isLoading}
+              onStatusChange={handleStatusChange}
+              isUpdating={updateStatusMutation.isPending}
+            />
+          ) : (
+            <Box 
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                  lg: 'repeat(4, 1fr)'
+                },
+                gap: 3
+              }}
+            >
+              {lits.map(lit => (
+                <LitCard
+                  key={lit.id}
+                  lit={lit}
+                  onStatusChange={handleStatusChange}
+                />
+              ))}
+            </Box>
+          )}
           
           {lits.length === 0 && (
             <Box 
