@@ -20,6 +20,26 @@ const HospitalisationPage = () => {
     navigate('/hospitalisations/planifier');
   };
 
+  const dischargeMutation = useMutation({
+    mutationFn: ({ hospitalisationId, litId }: { hospitalisationId: string, litId: string }) =>
+      dischargePatient(hospitalisationId, litId),
+    onSuccess: () => {
+      // Invalider les requêtes pour rafraîchir les listes
+      queryClient.invalidateQueries({ queryKey: ['hospitalisations'] });
+      queryClient.invalidateQueries({ queryKey: ['lits'] });
+      setNotification("La sortie du patient a été enregistrée avec succès.");
+    },
+    onError: (error: Error) => {
+      setNotification(`Erreur: ${error.message}`);
+    }
+  });
+
+  const handleDischarge = (hospitalisationId: string, litId: string) => {
+    if (window.confirm("Voulez-vous vraiment enregistrer la sortie de ce patient ?")) {
+      dischargeMutation.mutate({ hospitalisationId, litId });
+    }
+  };
+
   if (isError) {
     return <Typography color="error">Erreur lors du chargement des données d'hospitalisation.</Typography>;
   }
@@ -43,6 +63,7 @@ const HospitalisationPage = () => {
       <HospitalisationsTable
         hospitalisations={hospitalisations || []}
         isLoading={isLoading}
+        onDischarge={handleDischarge} // Passer la fonction au tableau
       />
     </Box>
   );

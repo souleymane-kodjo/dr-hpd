@@ -56,6 +56,7 @@ export interface GraphData {
 }
 export interface Hospitalisation {
   id: string;
+   litId: string;
   patientId: string;
   patientNom: string;
   dateAdmission: string;

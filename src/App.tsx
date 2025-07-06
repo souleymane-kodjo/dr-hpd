@@ -15,6 +15,8 @@ import PlanifierHospitalisationPage from './pages/Hospitalisation/PlanifierHospi
 import GestionLitsPage from './pages/lits/GestionLitsPage';
 import AdminRoute from './components/layout/AdminRoute';
 import UserManagementPage from './pages/Admin/UserManagementPage';
+import AddUserPage from './pages/Admin/AddUserPage';
+import UserDetailPage from './pages/Admin/UserDetailPage';
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
 
             <Route element={<AdminRoute />}>
               <Route path="/admin/utilisateurs" element={<UserManagementPage />} />
+              <Route path="/admin/utilisateurs/ajouter" element={<AddUserPage />} />
+              <Route path="/admin/utilisateurs/:userId" element={<UserDetailPage />} />
             </Route>
           </Route>
         </Route>

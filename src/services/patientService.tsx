@@ -72,3 +72,22 @@ export const updatePatient = async (id: string, data: PatientFormData): Promise<
 
   return updatedPatient;
 };
+
+export const dischargePatient = async (hospitalisationId: string, litId: string): Promise<{success: boolean}> => {
+  console.log(`Sortie du patient pour l'hospitalisation ${hospitalisationId}`);
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const hospiIndex = mockHospitalisations.findIndex(h => h.id === hospitalisationId);
+
+  if (hospiIndex === -1) {
+    throw new Error("Hospitalisation non trouvée.");
+  }
+
+  // 1. Mettre à jour le statut de l'hospitalisation
+  mockHospitalisations[hospiIndex].statut = 'Sortie effectuée'; // Nouveau statut
+
+  // 2. Mettre à jour le statut du lit pour qu'il soit nettoyé
+  await updateLitStatus(litId, 'En nettoyage');
+
+  return { success: true };
+};

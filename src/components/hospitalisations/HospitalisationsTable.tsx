@@ -20,32 +20,45 @@ const columns: GridColDef[] = [
     width: 120,
     renderCell: (params) => `Ch. ${params.row.chambre} - Lit ${params.row.lit}`,
   },
-  {
-    field: 'statut',
-    headerName: 'Statut',
-    width: 150,
-    renderCell: (params) => (
-      <Chip
-        label={params.value}
-        color={params.value === 'En cours' ? 'primary' : 'warning'}
-        size="small"
-      />
-    ),
-  },
-  {
-    field: 'actions',
-    type: 'actions',
-    headerName: 'Actions',
-    width: 100,
-    getActions: (params) => [
-      <GridActionsCellItem
-        icon={<VisibilityIcon />}
-        label="Voir Dossier Patient"
-        // Note: Le lien devrait aller au dossier du patient, pas de l'hospitalisation pour l'instant
-        onClick={() => window.location.assign(`/patients/${params.row.patientId}/medical-record`)}
-      />,
-    ],
-  },
+   {
+      field: 'statut',
+      headerName: 'Statut',
+      width: 150,
+      renderCell: (params) => {
+        let color: "primary" | "warning" | "success" = "primary";
+        if (params.value === 'Sortie prévue') color = 'warning';
+        if (params.value === 'Sortie effectuée') color = 'success';
+        return <Chip label={params.value} color={color} size="small" />;
+      },
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 120,
+      getActions: (params) => {
+        const actions = [
+          <GridActionsCellItem
+            icon={<Visibility />}
+            label="Voir Dossier Patient"
+            onClick={() => window.location.assign(`/patients/${params.row.patientId}/medical-record`)}
+          />
+        ];
+
+        // Afficher le bouton de sortie uniquement si le statut le permet
+        if (params.row.statut === 'En cours' || params.row.statut === 'Sortie prévue') {
+          actions.push(
+            <GridActionsCellItem
+              icon={<CheckCircleOutline />}
+              label="Finaliser la sortie"
+              onClick={() => onDischarge(params.row.id, params.row.litId)}
+              color="success"
+            />
+          );
+        }
+        return actions;
+      },
+    },
 ];
 
 const HospitalisationsTable = ({ hospitalisations, isLoading }: HospitalisationsTableProps) => {

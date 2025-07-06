@@ -9,8 +9,10 @@ const mockLits: Lit[] = [
   { id: 'lit-102-b', numeroChambre: '102', numeroLit: 'B', statut: 'Occupé', patientId: 'pat-003', patientNom: 'Ousmane Fall' },
   { id: 'lit-103-a', numeroChambre: '103', numeroLit: 'A', statut: 'En nettoyage' },
   { id: 'lit-103-b', numeroChambre: '103', numeroLit: 'B', statut: 'En maintenance' },
+  { id : 'lit-104-a', numeroChambre: '104', numeroLit: 'A', statut: 'Libre' },
+  { id: 'lit-104-b', numeroChambre: '104', numeroLit: 'B', statut: 'Libre' },
+  { id: 'lit-105-a', numeroChambre: '105', numeroLit: 'A', statut: 'Occupé', patientId: 'pat-005', patientNom: 'Ibrahima Sow' },
 ];
-
 export const getLits = async (): Promise<Lit[]> => {
   console.log("Récupération de l'état des lits...");
   await new Promise(resolve => setTimeout(resolve, 500));
