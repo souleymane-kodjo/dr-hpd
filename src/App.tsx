@@ -13,6 +13,8 @@ import PatientMedicalRecordPage from './pages/Patient/PatientMedicalRecordPage';
 import HospitalisationPage from './pages/Hospitalisation/HospitalisationPage';
 import PlanifierHospitalisationPage from './pages/Hospitalisation/PlanifierHospitalisationPage';
 import GestionLitsPage from './pages/lits/GestionLitsPage';
+import AdminRoute from './components/layout/AdminRoute';
+import UserManagementPage from './pages/Admin/UserManagementPage';
 
 function App() {
   return (
@@ -34,6 +36,10 @@ function App() {
              <Route path="/hospitalisations" element={<HospitalisationPage />} />
              <Route path="/hospitalisations/planifier" element={<PlanifierHospitalisationPage />} />
             <Route path="/lits" element={<GestionLitsPage />} />
+
+            <Route element={<AdminRoute />}>
+              <Route path="/admin/utilisateurs" element={<UserManagementPage />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

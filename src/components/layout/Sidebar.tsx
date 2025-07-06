@@ -26,6 +26,7 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { Link } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import { User, LogOut, BedIcon } from 'lucide-react';
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 import { useAuthStore } from '../../store/authStore';
 
 const drawerWidth = 240;
@@ -95,6 +96,7 @@ const StyledDrawer = styled(Drawer, {
 const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
   const theme = useTheme();
   const { user: currentUser, logout } = useAuthStore();
+  const isAdmin = currentUser?.roles.includes('ADMIN');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const profileRef = useRef<null | HTMLElement>(null);
 
@@ -194,6 +196,19 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
           </ListItem>
         ))}
       </List>
+      {isAdmin && (
+        <>
+          <Divider />
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/utilisateurs">
+                <ListItemIcon><SupervisedUserCircleIcon /></ListItemIcon>
+                <ListItemText primary="Utilisateurs" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </>
+      )}
 
       <Divider />
 
@@ -206,6 +221,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
         }}
         ref={profileRef}
       >
+
         <Box
           sx={{
             display: 'flex',
