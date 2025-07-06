@@ -27,6 +27,7 @@ import {
 import { useMemo, useState } from 'react';
 import { getPatients } from '../../services/patientService';
 import type { Patient } from '../../types';
+import { Link } from 'react-router-dom';
 
 
 // ---------- PATIENT SECTION ----------
@@ -167,8 +168,12 @@ const PatientSection = () => {
                   </TableCell>
                   <TableCell>{patient.bedNumber ?? '—'}</TableCell>
                   <TableCell>
-                    <Button size="small" variant="outlined">
-                      Voir dossier
+
+                      <Button
+                          size="small"
+                          variant="outlined"
+                          component={Link}
+                          to={`/patients/${patient.id}/medical-record`}>Voir dossier
                     </Button>
                   </TableCell>
                 </TableRow>

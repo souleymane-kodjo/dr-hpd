@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 // Configuration de base pour l'API
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = 'http://localhost:3001/api';
 const API_TIMEOUT = 10000; // 10 secondes
 
 // Interface pour les réponses d'erreur API
