@@ -363,9 +363,9 @@ const AddUserPage = () => {
         onClose={() => setShowSuccess(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={() => setShowSuccess(false)} 
-          severity="success" 
+        <Alert
+          onClose={() => setShowSuccess(false)}
+          severity="success"
           sx={{ width: '100%' }}
         >
           Utilisateur ajouté avec succès !

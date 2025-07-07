@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import { User, LogOut, BedIcon } from 'lucide-react';
 import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useAuthStore } from '../../store/authStore';
 
 const drawerWidth = 240;
@@ -97,6 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
   const theme = useTheme();
   const { user: currentUser, logout } = useAuthStore();
   const isAdmin = currentUser?.roles.includes('ADMIN');
+  const isMajorAdministratif = currentUser?.roles.includes('MAJOR_ADMINISTRATIF');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const profileRef = useRef<null | HTMLElement>(null);
 
@@ -196,16 +198,86 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
           </ListItem>
         ))}
       </List>
-      {isAdmin && (
+      {(isAdmin || isMajorAdministratif) && (
         <>
           <Divider />
           <List>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/admin/utilisateurs">
-                <ListItemIcon><SupervisedUserCircleIcon /></ListItemIcon>
-                <ListItemText primary="Utilisateurs" />
-              </ListItemButton>
-            </ListItem>
+            {isAdmin && (
+              <ListItem disablePadding>
+                <Tooltip title={!open ? 'Gestion Utilisateurs' : ''} placement="right">
+                  <ListItemButton 
+                    component={Link} 
+                    to="/admin/utilisateurs"
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                      borderRadius: 2,
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 2 : 'auto',
+                        justifyContent: 'center',
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      <SupervisedUserCircleIcon />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Gestion Utilisateurs"
+                      sx={{
+                        opacity: open ? 1 : 0,
+                        color: theme.palette.text.primary,
+                        fontWeight: 500,
+                      }} 
+                    />
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            )}
+            {(isAdmin || isMajorAdministratif) && (
+              <ListItem disablePadding>
+                <Tooltip title={!open ? 'Major Administratif' : ''} placement="right">
+                  <ListItemButton 
+                    component={Link} 
+                    to="/admin/major"
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                      borderRadius: 2,
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 2 : 'auto',
+                        justifyContent: 'center',
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      <AssignmentIndIcon />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Major Administratif"
+                      sx={{
+                        opacity: open ? 1 : 0,
+                        color: theme.palette.text.primary,
+                        fontWeight: 500,
+                      }} 
+                    />
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            )}
           </List>
         </>
       )}

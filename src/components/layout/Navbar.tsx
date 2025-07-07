@@ -14,8 +14,11 @@ import {
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import { useNotificationStore } from '../../store/notificationStore';
+import { useNotificationPermission } from '../../store/notificationStore';
+import NotificationPanel from '../notifications/NotificationPanel';
 
 const drawerWidth = 240;
 
@@ -51,7 +54,22 @@ const AppBar = styled(MuiAppBar, {
 const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
   const { user, logout } = useAuthStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
+
+  const { stats, fetchStats, connectRealTime } = useNotificationStore();
+  const { requestPermission, hasPermission } = useNotificationPermission();
+  // Initialize notifications
+  useEffect(() => {
+    fetchStats();
+    connectRealTime();
+
+    // Request notification permission if not already granted
+    if (!hasPermission()) {
+      requestPermission();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -65,6 +83,12 @@ const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
     logout();
     handleClose();
   };
+
+  const handleNotificationClick = () => {
+    setNotificationPanelOpen(true);
+  };
+
+  const unreadCount = stats?.unread || 0;
 
   return (
     <AppBar position="fixed" open={open} elevation={3}>
@@ -98,8 +122,8 @@ const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* Notifications */}
           <Tooltip title="Notifications">
-            <IconButton color="inherit">
-              <Badge badgeContent={3} color="error">
+            <IconButton color="inherit" onClick={handleNotificationClick}>
+              <Badge badgeContent={unreadCount} color="error" max={99}>
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -167,6 +191,12 @@ const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
           </Menu>
         </Box>
       </Toolbar>
+
+      {/* Notification Panel */}
+      <NotificationPanel
+        open={notificationPanelOpen}
+        onClose={() => setNotificationPanelOpen(false)}
+      />
     </AppBar>
   );
 };

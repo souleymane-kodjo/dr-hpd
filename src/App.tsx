@@ -14,13 +14,17 @@ import HospitalisationPage from './pages/Hospitalisation/HospitalisationPage';
 import PlanifierHospitalisationPage from './pages/Hospitalisation/PlanifierHospitalisationPage';
 import GestionLitsPage from './pages/lits/GestionLitsPage';
 import AdminRoute from './components/layout/AdminRoute';
+import MajorRoute from './components/layout/MajorRoute';
 import UserManagementPage from './pages/Admin/UserManagementPage';
 import AddUserPage from './pages/Admin/AddUserPage';
 import UserDetailPage from './pages/Admin/UserDetailPage';
+import MajorAdministratifPage from './pages/Admin/MajorAdministratifPage';
+import GlobalNotificationHandler from './components/notifications/GlobalNotificationHandler';
 
 function App() {
   return (
     <BrowserRouter>
+      <GlobalNotificationHandler />
       <Routes>
         {/* Routes publiques avec le AuthLayout */}
         <Route element={<AuthLayout />}>
@@ -43,6 +47,10 @@ function App() {
               <Route path="/admin/utilisateurs" element={<UserManagementPage />} />
               <Route path="/admin/utilisateurs/ajouter" element={<AddUserPage />} />
               <Route path="/admin/utilisateurs/:userId" element={<UserDetailPage />} />
+            </Route>
+            
+            <Route element={<MajorRoute />}>
+              <Route path="/admin/major" element={<MajorAdministratifPage />} />
             </Route>
           </Route>
         </Route>

@@ -4,13 +4,14 @@ import type { GridColDef } from '@mui/x-data-grid';
 import type { Hospitalisation } from '../../types';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Chip } from '@mui/material';
+import { CheckCircleOutline, Visibility } from '@mui/icons-material';
 
 interface HospitalisationsTableProps {
   hospitalisations: Hospitalisation[];
   isLoading: boolean;
+  onDischarge: (hospitalisationId: string | number, litId: string | number) => void;
 }
-
-const columns: GridColDef[] = [
+const getColumns = (onDischarge: (hospitalisationId: string | number, litId: string | number) => void): GridColDef[] => [
   { field: 'patientNom', headerName: 'Patient', width: 220 },
   { field: 'dateAdmission', headerName: 'Date d\'admission', width: 150 },
   { field: 'motif', headerName: 'Motif d\'hospitalisation', flex: 1 },
@@ -60,13 +61,12 @@ const columns: GridColDef[] = [
       },
     },
 ];
-
-const HospitalisationsTable = ({ hospitalisations, isLoading }: HospitalisationsTableProps) => {
+const HospitalisationsTable = ({ hospitalisations, isLoading, onDischarge }: HospitalisationsTableProps) => {
   return (
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
         rows={hospitalisations}
-        columns={columns}
+        columns={getColumns(onDischarge)}
         loading={isLoading}
         initialState={{
           pagination: {

@@ -79,3 +79,40 @@ export interface Lit {
   patientId?: string;
   patientNom?: string;
 }
+
+// Types pour les sorties et l'historique
+export interface SortiePatient {
+  id: string;
+  hospitalisationId: string;
+  patientId: string;
+  patientNom: string;
+  dateSortie: string;
+  heureSortie: string;
+  typeSortie: 'Normale' | 'Transfert' | 'Décès' | 'Fuite';
+  destinationTransfert?: string;
+  etatSortie: 'Guéri' | 'Amélioré' | 'Stationnaire' | 'Aggravé';
+  prescriptionsSortie?: string;
+  rendezvousSuivi?: string;
+  commentaires?: string;
+  majorValidant: string;
+  dateValidation: string;
+}
+
+export interface HistoriqueHospitalisation {
+  id: string;
+  patientId: string;
+  patientNom: string;
+  dateAdmission: string;
+  dateSortie?: string;
+  dureeHospitalisation?: number; // en jours
+  motifAdmission: string;
+  serviceHospitalisation: string;
+  chambre: string;
+  lit: string;
+  typeSortie?: 'Normale' | 'Transfert' | 'Décès' | 'Fuite';
+  etatSortie?: 'Guéri' | 'Amélioré' | 'Stationnaire' | 'Aggravé';
+  statut: 'En cours' | 'Terminée' | 'Annulée';
+}
+
+// Re-export des types de notifications
+export * from './notifications';

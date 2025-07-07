@@ -1,5 +1,5 @@
 // src/pages/HospitalisationPage.tsx
-import { useQuery } from '@tanstack/react-query';
+
 import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Typography } from '@mui/material';
@@ -7,9 +7,13 @@ import { Box, Button, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import HospitalisationsTable from '../../components/hospitalisations/HospitalisationsTable';
 import { getHospitalisations } from '../../services/hospitalisationService';
+import { dischargePatient } from '../../services/patientService';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 
 const HospitalisationPage = () => {
   const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
 
   const { data: hospitalisations, isLoading, isError } = useQuery({
     queryKey: ['hospitalisations'],
