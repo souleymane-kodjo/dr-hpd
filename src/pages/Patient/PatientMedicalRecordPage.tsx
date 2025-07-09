@@ -8,7 +8,8 @@ import {
   Tab,
   Button,
   Chip,
-  Avatar
+  Avatar,
+  IconButton
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -21,7 +22,10 @@ import {
   Healing as StethoscopeIcon,
   Biotech as TestTubeIcon,
   Assignment as ClipboardIcon,
-  Medication as PillIcon
+  Medication as PillIcon,
+  FlipToBack as FlipToBackIcon,
+  FlipToFront as FlipToFrontIcon,
+  Favorite as FavoriteIcon
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -30,6 +34,7 @@ import type { MedicalRecord } from '../../services/medicalRecordService';
 import { getPatients } from '../../services/patientService';
 import type { Patient } from '../../types';
 import { CreditCardIcon } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -55,6 +60,8 @@ function TabPanel(props: TabPanelProps) {
 const PatientMedicalRecordPage = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const navigate = useNavigate();
+  const [isFlipped, setIsFlipped] = useState(false);
+  const handleFlip = () => setIsFlipped(!isFlipped);
   const [activeTab, setActiveTab] = useState(0);
   // Récupération des données patient
   const { data: patients = [], isLoading: isLoadingPatients } = useQuery({
@@ -449,177 +456,315 @@ const PatientMedicalRecordPage = () => {
       </TabPanel>
 
       {/* Carte Patient */}
-      <TabPanel value={activeTab} index={3}>
-        <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
-          <Typography variant="h5" fontWeight={600} gutterBottom>
-            Carte Patient <Box component="span" sx={{ color: 'primary.main' }}>Virtuelle</Box>
-          </Typography>
+      <TabPanel value={activeTab} index={3}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={4} mt={0}
+        sx={{
+          p: 3,
+          backgroundColor: 'background.paper',
+          borderRadius: 2,
+          boxShadow: 3,
+          width: '100%',
+          maxWidth: 1000,
+          margin: '0 auto',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
 
-          {/* Carte virtuelle du patient */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-            <Paper
-              elevation={8}
+        border ="1px solid rgba(255,255,255,0.2)"
+        >
+          <Box
+          border ="1px solid rgba(239, 34, 34, 0.2)"
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            width: '60%',
+            perspective: '1000px',
+            height: 390,
+            position: 'relative'
+          }}>
+            <Box
               sx={{
-                p: 4,
-                width: 400,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                borderRadius: 3,
-                position: 'relative',
-                overflow: 'hidden',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'url(/images/hpd-logo.png) no-repeat center',
-                  backgroundSize: '120px',
-                  opacity: 0.1,
-                  zIndex: 0
+                width: '100%',
+                height: '100%',
+                transformStyle: 'preserve-3d',
+                transition: 'transform 0.6s',
+                ransform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                cursor: 'pointer',
+                '&:hover': {
+                  '& .flip-button': {
+                    opacity: 1
+                  }
                 }
               }}
+              onClick={handleFlip}
             >
-              {/* Header de la carte */}
-              <Box display="flex" alignItems="center" mb={3} sx={{ position: 'relative', zIndex: 1 }}>
-                <Avatar
+              {/* Face avant */}
+              <Paper
+                elevation={8}
+                sx={{
+                  p: 3,
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(135deg, #0F4C81 0%, #1A5F9A 100%)',
+                  color: 'white',
+                  borderRadius: 3,
+                  position: 'absolute',
+                  backfaceVisibility: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'url(/images/hpd-logo.png) no-repeat center',
+                    backgroundSize: '150px',
+                    opacity: 0.08,
+                    zIndex: 0
+                  }
+                }}
+              >
+                {/* Bouton flip */}
+                <IconButton
+                  className="flip-button"
                   sx={{
-                    width: 70,
-                    height: 70,
-                    mr: 2,
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    fontSize: '2rem',
-                    fontWeight: 'bold'
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    zIndex: 2,
+                    opacity: 0,
+                    transition: 'opacity 0.3s',
+                    color: 'white',
+                    backgroundColor: 'rgba(0,0,0,0.2)'
                   }}
                 >
-                  {selectedPatient?.name?.charAt(0) || selectedPatient?.nomComplet?.charAt(0) || 'P'}
-                </Avatar>
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5 }}>
-                    {selectedPatient?.name || selectedPatient?.nomComplet || 'Patient'}
-                  </Typography>
-                  <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                    Patient • {selectedPatient?.age || 'N/A'} ans
-                  </Typography>
-                </Box>
-              </Box>
+                  <FlipToBackIcon />
+                </IconButton>
 
-              {/* Informations de la carte */}
-              <Box sx={{ position: 'relative', zIndex: 1 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                  <Box>
-                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
-                      Numéro Patient
-                    </Typography>
-                    <Typography variant="h6" fontWeight="bold">
-                      {selectedPatient?.matricule || selectedPatient?.id || 'N/A'}
-                    </Typography>
-                  </Box>
-                  <Box textAlign="right">
-                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
-                      Spécialité
-                    </Typography>
-                    <Typography variant="body1" fontWeight="600">
-                      {selectedPatient?.specialty || 'Médecine générale'}
-                    </Typography>
-                  </Box>
-                </Box>
+                {/* Header */}
+                <Box display="flex" alignItems="center"
 
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                  <Box>
-                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
-                      Statut
-                    </Typography>
-                    <Typography variant="body1" fontWeight="600">
-                      {selectedPatient?.statut || 'Actif'}
-                    </Typography>
-                  </Box>
-                  <Box textAlign="right">
-                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
-                      Sexe
-                    </Typography>
-                    <Typography variant="body1" fontWeight="600">
-                      {selectedPatient?.sexe === 'M' ? 'Masculin' : selectedPatient?.sexe === 'F' ? 'Féminin' : 'N/A'}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* Footer de la carte */}
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mt={3}
-                  pt={2}
-                  sx={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}
-                >
-                  <Box>
-                    <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem' }}>
-                      HÔPITAL PRIVÉ DE DAKAR
-                    </Typography>
-                    <Typography variant="body2" fontWeight="600">
-                      Carte Patient Officielle
-                    </Typography>
-                  </Box>
-                  <Box
+                sx={{
+                   position: 'relative',
+                    zIndex: 1 ,
+                    width: '100%',
+                    justifyContent: 'space-between',
+                    height : 200
+                   }}>
+                  <Avatar
+                    src='/images/avatar1.jpg' // Placeholder image, replace with selectedPatient.photoUrl if available
                     sx={{
-                      width: 60,
-                      height: 60,
-                      bgcolor: 'rgba(255,255,255,0.2)',
-                      borderRadius: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+                      width: 90,
+                      height: 90,
+                      mr: 3,
+                      border: '3px solid rgba(255,255,255,0.3)',
+                      fontSize: '2.5rem',
+                      fontWeight: 'bold',
+                      bgcolor: 'rgba(255,255,255,0.2)'
                     }}
                   >
-                    <CreditCardIcon size={30} />
+                    {selectedPatient?.name?.charAt(0) || selectedPatient?.nomComplet?.charAt(0) || 'P'}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5 }}>
+                      {selectedPatient?.name || selectedPatient?.nomComplet || 'Patient'}
+                    </Typography>
+                    <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                      {selectedPatient?.age || 'N/A'} ans • {selectedPatient?.sexe === 'M' ? 'Masculin' : 'Féminin' || 'N/A'}
+                    </Typography>
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      mt: 1,
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1
+                    }}>
+                      <FavoriteIcon sx={{ fontSize: 16, mr: 1 }} />
+                      <Typography variant="body2" fontWeight="600">
+                        {selectedPatient?.bloodType || 'Groupe sanguin inconnu'}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Paper>
-          </Box>
 
-          {/* Informations supplémentaires */}
-          <Paper sx={{ p: 3, width: '100%', maxWidth: 600 }}>
-            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: 'primary.main' }}>
-              Informations de la carte
-            </Typography>
-            <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: 'repeat(2, 1fr)' }} gap={2}>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={500}>
-                  Date d'émission
-                </Typography>
-                <Typography variant="body1">
-                  {new Date().toLocaleDateString('fr-FR')}
-                </Typography>
+                {/* Informations principales */}
+                <Box sx={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: 2,
+                  position: 'relative',
+                  zIndex: 1,
+                  mt: 2
+                }}>
+                    <Box>
+                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                        ID Patient
+                      </Typography>
+                      <Typography variant="body1" fontWeight="600">
+                        {selectedPatient?.matricule || selectedPatient?.id || 'N/A'}
+                      </Typography>
+                    </Box>
+
+                    <Box>
+                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                        Date admission
+                      </Typography>
+                      <Typography variant="body1" fontWeight="600">
+                        {selectedPatient?.admissionDate || 'N/A'}
+                      </Typography>
+                    </Box>
+
+                    <Box>
+                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                        Chambre/Lit
+                      </Typography>
+                      <Typography variant="body1" fontWeight="600">
+                        {selectedPatient?.roomNumber ? `Ch. ${selectedPatient.roomNumber}` : 'N/A'} {selectedPatient?.bedNumber ? `/ Lit ${selectedPatient.bedNumber}` : ''}
+                      </Typography>
+                    </Box>
+
+                    <Box>
+                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.75rem' }}>
+                        Médecin traitant
+                      </Typography>
+                      <Typography variant="body1" fontWeight="600">
+                        {selectedPatient?.attendingPhysician || 'N/A'}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Footer */}
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    position: 'relative',
+                    zIndex: 1,
+                    mt: 2,
+                    pt: 2,
+                    borderTop: '1px solid rgba(255,255,255,0.2)'
+                  }}>
+                    <Box>
+                      <Typography variant="caption" sx={{ opacity: 0.8, fontSize: '0.7rem' }}>
+                        HÔPITAL PRINCIPAL DE DAKAR
+                      </Typography>
+                      <Typography variant="body2" fontWeight="600">
+                        {new Date().toLocaleDateString('fr-FR')}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar
+                        src="/images/hospital-logo.png"
+                        sx={{
+                          width: 30,
+                          height: 30,
+                          mr: 1,
+                          backgroundColor: 'white',
+                          padding: 0.5
+                        }}
+                      />
+                      <Typography variant="body2" fontWeight="600">
+                        Carte Patient
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
+
+                {/* Face arrière */}
+                <Paper
+                  elevation={8}
+                  sx={{
+                    p: 3,
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                    color: '#333',
+                    borderRadius: 3,
+                    position: 'absolute',
+                    backfaceVisibility: 'hidden',
+                    transform: 'rotateY(180deg)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {/* Bouton flip */}
+                  <IconButton
+                    className="flip-button"
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      zIndex: 2,
+                      opacity: 0,
+                      transition: 'opacity 0.3s',
+                      color: '#0F4C81'
+                    }}
+                  >
+                    <FlipToFrontIcon />
+                  </IconButton>
+
+                  {/* QR Code */}
+                  <QRCodeSVG
+                    value={JSON.stringify({
+                      id: selectedPatient?.id,
+                      name: selectedPatient?.name,
+                      age: selectedPatient?.age,
+                      bloodType: selectedPatient?.bloodType,
+                      room: selectedPatient?.roomNumber,
+                      bed: selectedPatient?.bedNumber,
+                      doctor: selectedPatient?.attendingPhysician
+                    })}
+                    size={150}
+                    level="H"
+                    includeMargin
+                  />
+
+                  <Typography variant="h6" sx={{ mt: 2, color: '#0F4C81', fontWeight: 'bold' }}>
+                    {selectedPatient?.name || selectedPatient?.nomComplet || 'Patient'}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ color: '#666', textAlign: 'center', maxWidth: '80%' }}>
+                    Scannez ce code pour accéder aux informations du patient
+                  </Typography>
+
+                  <Box sx={{
+                    mt: 2,
+                    p: 1,
+                    backgroundColor: 'white',
+                    borderRadius: 1,
+                    width: '80%',
+                    textAlign: 'center',
+                    border: '1px solid #eee'
+                  }}>
+                    <Typography variant="caption" sx={{ color: '#666' }}>
+                      Contact d'urgence
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold">
+                      {selectedPatient?.emergencyContact || 'Non renseigné'}
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="caption" sx={{
+                    position: 'absolute',
+                    bottom: 8,
+                    color: '#999',
+                    fontSize: '0.65rem'
+                  }}>
+                    #{selectedPatient?.id || 'ID-NON-DISPONIBLE'} • HPD {new Date().getFullYear()}
+                  </Typography>
+                </Paper>
               </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={500}>
-                  Validité
-                </Typography>
-                <Typography variant="body1">
-                  Permanente
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={500}>
-                  Diagnostic principal
-                </Typography>
-                <Typography variant="body1">
-                  {selectedPatient?.diagnosticActuel || 'Non renseigné'}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="caption" color="text.secondary" fontWeight={500}>
-                  Service
-                </Typography>
-                <Typography variant="body1">
-                  {selectedPatient?.specialty || 'Médecine générale'}
-                </Typography>
-              </Box>
-            </Box>
-          </Paper>
+          </Box>
         </Box>
       </TabPanel>
     </Box>

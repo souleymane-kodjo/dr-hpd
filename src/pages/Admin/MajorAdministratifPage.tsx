@@ -12,6 +12,7 @@ import {
   Badge,
   Grid
 } from '@mui/material';
+
 import {
   Assignment as AssignmentIcon,
   ExitToApp as ExitIcon,
@@ -22,12 +23,12 @@ import {
 import { getDemandesAdmission, getStatistiquesAdmissions } from '../../services/admissionService';
 import { getHistoriqueHospitalisations, getStatistiquesHospitalisations } from '../../services/sortieService';
 import { useAuthStore } from '../../store/authStore';
-
-// Composants à créer
+import MajorDashboard from '../../components/major/MajorDashboard';
 import DemandesAdmissionTable from '../../components/major/DemandesAdmissionTable';
 import SortiesPatientTable from '../../components/major/SortiesPatientTable';
 import HistoriqueHospitalisationsTable from '../../components/major/HistoriqueHospitalisationsTable';
-import MajorDashboard from '../../components/major/MajorDashboard';
+
+// Composants à créer
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -99,9 +100,9 @@ const MajorAdministratifPage = () => {
         <Typography variant="h4" fontWeight="bold">
           Interface Major Administratif
         </Typography>
-        <Chip 
-          label={`${user?.nom}`} 
-          color="primary" 
+        <Chip
+          label={`${user?.nom}`}
+          color="primary"
           variant="outlined"
           sx={{ fontSize: '0.9rem', px: 1 }}
         />
@@ -109,7 +110,7 @@ const MajorAdministratifPage = () => {
 
       {/* Statistiques rapides */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -121,7 +122,7 @@ const MajorAdministratifPage = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -133,7 +134,7 @@ const MajorAdministratifPage = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -145,7 +146,7 @@ const MajorAdministratifPage = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
@@ -162,36 +163,36 @@ const MajorAdministratifPage = () => {
       {/* Onglets */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab 
-            icon={<DashboardIcon />} 
-            label="Tableau de bord" 
-            iconPosition="start" 
+          <Tab
+            icon={<DashboardIcon />}
+            label="Tableau de bord"
+            iconPosition="start"
           />
-          <Tab 
+          <Tab
             icon={
               <Badge badgeContent={demandesEnAttente} color="warning">
                 <AssignmentIcon />
               </Badge>
-            } 
-            label="Demandes d'admission" 
-            iconPosition="start" 
+            }
+            label="Demandes d'admission"
+            iconPosition="start"
           />
-          <Tab 
-            icon={<ExitIcon />} 
-            label="Sorties de patients" 
-            iconPosition="start" 
+          <Tab
+            icon={<ExitIcon />}
+            label="Sorties de patients"
+            iconPosition="start"
           />
-          <Tab 
-            icon={<HistoryIcon />} 
-            label="Historique" 
-            iconPosition="start" 
+          <Tab
+            icon={<HistoryIcon />}
+            label="Historique"
+            iconPosition="start"
           />
         </Tabs>
       </Box>
 
       {/* Contenu des onglets */}
       <TabPanel value={tabValue} index={0}>
-        <MajorDashboard 
+        <MajorDashboard
           statsAdmissions={statsAdmissions}
           statsHospitalisations={statsHospitalisations}
           demandesRecentes={demandesAdmission.slice(0, 5)}
@@ -199,7 +200,7 @@ const MajorAdministratifPage = () => {
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <DemandesAdmissionTable 
+        <DemandesAdmissionTable
           demandes={demandesAdmission}
           onValidation={() => {
             // Refetch des données après validation
@@ -212,7 +213,7 @@ const MajorAdministratifPage = () => {
       </TabPanel>
 
       <TabPanel value={tabValue} index={3}>
-        <HistoriqueHospitalisationsTable 
+        <HistoriqueHospitalisationsTable
           historique={historiqueHospitalisations}
         />
       </TabPanel>

@@ -7,6 +7,7 @@ import type { HospitalisationFormData } from "../components/hospitalisations/hos
 const mockHospitalisations: Hospitalisation[] = [
   {
     id: 'hosp-001',
+    litId: 'lit-101-a',
     patientId: 'pat-001',
     patientNom: 'Mamadou Lamine Faye',
     dateAdmission: '2025-07-01',
@@ -17,6 +18,7 @@ const mockHospitalisations: Hospitalisation[] = [
   },
   {
     id: 'hosp-002',
+    litId: 'lit-102-b',
     patientId: 'pat-003',
     patientNom: 'Ousmane Fall',
     dateAdmission: '2025-06-28',
@@ -51,6 +53,7 @@ export const planifierHospitalisation = async (data: HospitalisationFormData): P
   // Crée la nouvelle hospitalisation
   const nouvelleHospitalisation: Hospitalisation = {
     id: newId,
+    litId: `lit-${data.chambre}-${data.lit.toLowerCase()}`,
     patientId: data.patientId,
     patientNom: patientNom,
     dateAdmission: data.dateAdmission,
@@ -102,3 +105,6 @@ export const annulerHospitalisation = async (id: string): Promise<void> => {
   
   console.log("Hospitalisation annulée");
 };
+
+// Export for use in other services
+export { mockHospitalisations };

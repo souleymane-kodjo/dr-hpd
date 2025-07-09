@@ -1,5 +1,6 @@
 // src/services/patientService.ts
-
+//import axios axiosClient
+import {axiosClient} from '../api/axiosClient';
 import type { Patient } from "../types";
 import type { PatientFormData } from "../components/patient/patientSchema";
 const mockPatients: Patient[] = [
@@ -77,7 +78,11 @@ export const dischargePatient = async (hospitalisationId: string, litId: string)
   console.log(`Sortie du patient pour l'hospitalisation ${hospitalisationId}`);
   await new Promise(resolve => setTimeout(resolve, 500));
 
-  const hospiIndex = mockHospitalisations.findIndex(h => h.id === hospitalisationId);
+  // Import dynamic des hospitalisations
+  const { mockHospitalisations } = await import('./hospitalisationService');
+  const { updateLitStatus } = await import('./litService');
+
+  const hospiIndex = mockHospitalisations.findIndex((h: any) => h.id === hospitalisationId);
 
   if (hospiIndex === -1) {
     throw new Error("Hospitalisation non trouvée.");

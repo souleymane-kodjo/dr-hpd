@@ -1,507 +1,329 @@
-// src/pages/Hospitalisation/PlanifierHospitalisationPage.tsx
-import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 
+import React, { useState, useEffect } from 'react';
 import {
+    Grid,
   Container,
-  Paper,
   Typography,
-  TextField,
-  Button,
-  Grid,
+  Paper,
   Box,
   Stepper,
   Step,
   StepLabel,
-  StepContent,
+  Button,
   Alert,
-  Autocomplete,
+  Snackbar,
+  Card,
+  CardContent,
   FormControl,
   InputLabel,
   Select,
-  FormHelperText,
   MenuItem,
-  Chip,
-  Card,
-  CardContent,
-  Divider,
-  Stack,
+  TextField,
+  Chip
 } from '@mui/material';
 
-import {
-  Save as SaveIcon,
-  ArrowBack as ArrowBackIcon,
-  Person as PersonIcon,
-  Event as EventIcon,
-  LocalHospital as HospitalIcon,
-  Assignment as AssignmentIcon,
-} from '@mui/icons-material';
-
-import { hospitalisationSchema, type HospitalisationFormData, prioriteOptions, serviceOptions, chambreOptions, litOptions, medecinOptions } from '../../components/hospitalisations/hospitalisationSchema';
-import { planifierHospitalisation } from '../../services/hospitalisationService';
+import { styled } from '@mui/material/styles';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { getPatients } from '../../services/patientService';
+import { getLits } from '../../services/litService';
+import { planifierHospitalisation } from '../../services/hospitalisationService';
 import type { Patient } from '../../types';
+import { fr } from 'date-fns/locale';
 
-const steps = [
-  {
-    label: 'Sélection du patient',
-    description: 'Choisir le patient à hospitaliser',
-    icon: <PersonIcon />,
-  },
-  {
-    label: 'Dates et priorité',
-    description: 'Définir les dates et la priorité',
-    icon: <EventIcon />,
-  },
-  {
-    label: 'Service et attribution',
-    description: 'Choisir le service, chambre et lit',
-    icon: <HospitalIcon />,
-  },
-  {
-    label: 'Finalisation',
-    description: 'Motif et observations',
-    icon: <AssignmentIcon />,
-  },
-];
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
 
-const PlanifierHospitalisationPage = () => {
+const steps = ['Sélection du patient', 'Informations médicales', 'Attribution du lit', 'Confirmation'];
+
+const PlanifierHospitalisationPage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [lits, setLits] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  // Récupérer la liste des patients
-  const { data: patients = [], isLoading: loadingPatients } = useQuery({
-    queryKey: ['patients'],
-    queryFn: getPatients,
-  });
+  // Données du formulaire
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [motif, setMotif] = useState('');
+  const [diagnostic, setDiagnostic] = useState('');
+  const [urgence, setUrgence] = useState<'faible' | 'moyenne' | 'elevee'>('moyenne');
+  const [dateAdmission, setDateAdmission] = useState<Date | null>(new Date());
+  const [selectedLit, setSelectedLit] = useState<any | null>(null);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    trigger,
-    formState: { errors },
-    reset,
-  } = useForm<HospitalisationFormData>({
-    resolver: zodResolver(hospitalisationSchema),
-    mode: 'onChange',
-    defaultValues: {
-      patientId: '',
-      dateAdmission: '',
-      dateSortiePrevue: '',
-      motif: '',
-      priorite: 'Programmée',
-      service: '',
-      chambre: '',
-      lit: '',
-      medecin: '',
-      observations: '',
-    },
-  });
+  useEffect(() => {
+    loadInitialData();
+  }, []);
 
-  const watchedValues = watch();
-  const selectedPatient = patients.find(p => p.id === watchedValues.patientId);
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+      const [patientsData, litsData] = await Promise.all([
+        getPatients(),
+        getLits()
+      ]);
+      setPatients(patientsData);
+      setLits(litsData.filter(lit => lit.statut === 'Libre'));
+    } catch (error) {
+      console.error('Erreur lors du chargement:', error);
+      setError('Erreur lors du chargement des données');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const mutation = useMutation({
-    mutationFn: planifierHospitalisation,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hospitalisations'] });
-      setShowSuccess(true);
-      setTimeout(() => {
-        navigate('/hospitalisations');
-      }, 2000);
-    },
-    onError: (error) => {
-      console.error('Erreur lors de la planification:', error);
-      setIsSubmitting(false);
-    },
-  });
-
-  const handleNext = async () => {
-    const fieldsToValidate = getFieldsForStep(activeStep);
-    const isStepValid = await trigger(fieldsToValidate);
-    
-    if (isStepValid) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleNext = () => {
+    if (validateStep()) {
+      setActiveStep((prev) => prev + 1);
     }
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep((prev) => prev - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-    reset();
+  const validateStep = () => {
+    switch (activeStep) {
+      case 0:
+        return selectedPatient !== null;
+      case 1:
+        return motif.trim() !== '' && diagnostic.trim() !== '';
+      case 2:
+        return selectedLit !== null;
+      default:
+        return true;
+    }
   };
 
-  const onSubmit = async (data: HospitalisationFormData) => {
-    setIsSubmitting(true);
+  const handleSubmit = async () => {
+    if (!selectedPatient || !selectedLit || !dateAdmission) {
+      setError('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
     try {
-      await mutation.mutateAsync(data);
-    } catch {
-      setIsSubmitting(false);
+      setLoading(true);
+      await planifierHospitalisation({
+        patientId: selectedPatient.id,
+        dateAdmission: dateAdmission?.toISOString() || new Date().toISOString(),
+        motif,
+        priorite: urgence === 'faible' ? 'Programmée' : urgence === 'elevee' ? 'Urgence' : 'Semi-urgente',
+        service: selectedLit.service || 'Service général',
+        chambre: selectedLit.chambre || 'Chambre standard',
+        lit: selectedLit.numero?.toString() || 'Non spécifié',
+        medecin: 'Médecin traitant',
+        observations: diagnostic
+      });
+      setSuccess(true);
+      setActiveStep(0);
+      // Reset form
+      setSelectedPatient(null);
+      setMotif('');
+      setDiagnostic('');
+      setUrgence('moyenne');
+      setDateAdmission(new Date());
+      setSelectedLit(null);
+      // Reload available beds
+      loadInitialData();
+    } catch (error) {
+      console.error('Erreur lors de la planification:', error);
+      setError('Erreur lors de la planification de l\'hospitalisation');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getFieldsForStep = (step: number) => {
-    switch (step) {
-      case 0:
-        return ['patientId'];
-      case 1:
-        return ['dateAdmission', 'priorite'];
-      case 2:
-        return ['service', 'chambre', 'lit', 'medecin'];
-      case 3:
-        return ['motif'];
-      default:
-        return [];
-    }
-  };
-
-  const getPrioriteColor = (priorite: string) => {
-    switch (priorite) {
-      case 'Urgence':
-        return 'error';
-      case 'Semi-urgente':
-        return 'warning';
-      case 'Programmée':
-        return 'success';
-      default:
-        return 'default';
-    }
-  };
-
-  const getStepContent = (step: number) => {
-    switch (step) {
+  const renderStepContent = () => {
+    switch (activeStep) {
       case 0:
         return (
-          <Box sx={{ mt: 2 }}>
-            <Controller
-              name="patientId"
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  {...field}
-                  options={patients}
-                  loading={loadingPatients}
-                  getOptionLabel={(option: Patient) => `${option.nomComplet} (${option.matricule})`}
-                  renderOption={(props, option: Patient) => (
-                    <Box component="li" {...props}>
-                      <Box>
-                        <Typography variant="body1" fontWeight="medium">
-                          {option.nomComplet}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {option.matricule} • {option.age} ans • {option.specialty} • {option.sexe}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Rechercher et sélectionner un patient *"
-                      error={!!errors.patientId}
-                      helperText={errors.patientId?.message}
-                      fullWidth
-                      placeholder="Tapez le nom ou matricule du patient..."
-                    />
-                  )}
-                  onChange={(_, value) => field.onChange(value?.id || '')}
-                  value={patients.find(p => p.id === field.value) || null}
-                />
-              )}
-            />
-
-            {selectedPatient && (
-              <Card sx={{ mt: 3, bgcolor: 'primary.50', border: '1px solid', borderColor: 'primary.200' }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom color="primary">
-                    Patient sélectionné
-                  </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="body2" color="text.secondary">Nom complet</Typography>
-                      <Typography variant="body1" fontWeight="medium">{selectedPatient.nomComplet}</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="body2" color="text.secondary">Matricule</Typography>
-                      <Typography variant="body1">{selectedPatient.matricule}</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="body2" color="text.secondary">Âge</Typography>
-                      <Typography variant="body1">{selectedPatient.age} ans</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="body2" color="text.secondary">Spécialité</Typography>
-                      <Typography variant="body1">{selectedPatient.specialty}</Typography>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            )}
-          </Box>
-        );
-
-      case 1:
-        return (
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="dateAdmission"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Date d'admission *"
-                      type="date"
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                      error={!!errors.dateAdmission}
-                      helperText={errors.dateAdmission?.message}
-                      inputProps={{
-                        min: new Date().toISOString().split('T')[0]
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="dateSortiePrevue"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Date de sortie prévue (optionnel)"
-                      type="date"
-                      fullWidth
-                      InputLabelProps={{ shrink: true }}
-                      error={!!errors.dateSortiePrevue}
-                      helperText={errors.dateSortiePrevue?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Controller
-                  name="priorite"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.priorite}>
-                      <InputLabel>Priorité de l'hospitalisation *</InputLabel>
-                      <Select {...field} label="Priorité de l'hospitalisation *">
-                        {prioriteOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Chip
-                                label={option.label}
-                                size="small"
-                                color={getPrioriteColor(option.value)}
-                              />
-                            </Box>
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.priorite && (
-                        <FormHelperText>{errors.priorite.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        );
-
-      case 2:
-        return (
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="service"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.service}>
-                      <InputLabel>Service médical *</InputLabel>
-                      <Select {...field} label="Service médical *">
-                        {serviceOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.service && (
-                        <FormHelperText>{errors.service.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="medecin"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.medecin}>
-                      <InputLabel>Médecin responsable *</InputLabel>
-                      <Select {...field} label="Médecin responsable *">
-                        {medecinOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.medecin && (
-                        <FormHelperText>{errors.medecin.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="chambre"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.chambre}>
-                      <InputLabel>Chambre *</InputLabel>
-                      <Select {...field} label="Chambre *">
-                        {chambreOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.chambre && (
-                        <FormHelperText>{errors.chambre.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Controller
-                  name="lit"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.lit}>
-                      <InputLabel>Lit *</InputLabel>
-                      <Select {...field} label="Lit *">
-                        {litOptions.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.lit && (
-                        <FormHelperText>{errors.lit.message}</FormHelperText>
-                      )}
-                    </FormControl>
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        );
-
-      case 3:
-        return (
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Controller
-                  name="motif"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Motif d'hospitalisation *"
-                      multiline
-                      rows={4}
-                      fullWidth
-                      error={!!errors.motif}
-                      helperText={errors.motif?.message}
-                      placeholder="Décrivez le motif médical de l'hospitalisation..."
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Controller
-                  name="observations"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Observations complémentaires (optionnel)"
-                      multiline
-                      rows={3}
-                      fullWidth
-                      error={!!errors.observations}
-                      helperText={errors.observations?.message}
-                      placeholder="Notes supplémentaires, allergies, consignes particulières..."
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-
-            {/* Résumé */}
-            <Card sx={{ mt: 3, bgcolor: 'grey.50' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Résumé de l'hospitalisation
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary">Patient</Typography>
-                    <Typography variant="body1">{selectedPatient?.nomComplet}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary">Date d'admission</Typography>
-                    <Typography variant="body1">{watchedValues.dateAdmission}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary">Priorité</Typography>
-                    <Chip
-                      label={watchedValues.priorite}
-                      size="small"
-                      color={getPrioriteColor(watchedValues.priorite)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary">Service</Typography>
-                    <Typography variant="body1">{watchedValues.service}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary">Chambre - Lit</Typography>
-                    <Typography variant="body1">{watchedValues.chambre} - {watchedValues.lit}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="body2" color="text.secondary">Médecin</Typography>
-                    <Typography variant="body1">{watchedValues.medecin}</Typography>
-                  </Grid>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Sélectionnez le patient à hospitaliser
+            </Typography>
+            <Grid container spacing={2}>
+              {patients.map((patient) => (
+                <Grid xs={12} md={6} key={patient.id}>
+                  <Card
+                    sx={{
+                      cursor: 'pointer',
+                      border: selectedPatient?.id === patient.id ? 2 : 1,
+                      borderColor: selectedPatient?.id === patient.id ? 'primary.main' : 'grey.300',
+                    }}
+                    onClick={() => setSelectedPatient(patient)}
+                  >
+                    <CardContent>
+                      <Typography variant="h6">
+                        {patient.nomComplet}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        Âge: {patient.age} ans
+                      </Typography>
+                      <Typography color="textSecondary">
+                        Matricule: {patient.matricule}
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </CardContent>
-            </Card>
+              ))}
+            </Grid>
+          </Box>
+        );
+
+      case 1:
+        return (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Informations médicales
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid xs={12}>
+                <TextField
+                  fullWidth
+                  label="Motif d'hospitalisation"
+                  value={motif}
+                  onChange={(e) => setMotif(e.target.value)}
+                  multiline
+                  rows={3}
+                  required
+                />
+              </Grid>
+              <Grid xs={12}>
+                <TextField
+                  fullWidth
+                  label="Diagnostic"
+                  value={diagnostic}
+                  onChange={(e) => setDiagnostic(e.target.value)}
+                  multiline
+                  rows={3}
+                  required
+                />
+              </Grid>
+              <Grid xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Niveau d'urgence</InputLabel>
+                  <Select
+                    value={urgence}
+                    onChange={(e) => setUrgence(e.target.value as 'faible' | 'moyenne' | 'elevee')}
+                    label="Niveau d'urgence"
+                  >
+                    <MenuItem value="faible">Faible</MenuItem>
+                    <MenuItem value="moyenne">Moyenne</MenuItem>
+                    <MenuItem value="elevee">Élevée</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid xs={12} md={6}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+                  <DatePicker
+                    label="Date d'admission prévue"
+                    value={dateAdmission}
+                    onChange={(newValue) => setDateAdmission(newValue)}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </Grid>
+            </Grid>
+          </Box>
+        );
+
+      case 2:
+        return (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Attribution du lit
+            </Typography>
+            <Grid container spacing={2}>
+              {lits.map((lit) => (
+                <Grid xs={12} md={4} key={lit.id}>
+                  <Card
+                    sx={{
+                      cursor: 'pointer',
+                      border: selectedLit?.id === lit.id ? 2 : 1,
+                      borderColor: selectedLit?.id === lit.id ? 'primary.main' : 'grey.300',
+                    }}
+                    onClick={() => setSelectedLit(lit)}
+                  >
+                    <CardContent>
+                      <Typography variant="h6">
+                        Lit {lit.numero}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        Service: {lit.service}
+                      </Typography>
+                      <Chip
+                        label={lit.statut}
+                        color={lit.statut === 'libre' ? 'success' : 'default'}
+                        size="small"
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        );
+
+      case 3:
+        return (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Confirmation de la planification
+            </Typography>
+            {selectedPatient && selectedLit && (
+              <Grid container spacing={2}>
+                <Grid xs={12} md={6}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Patient
+                      </Typography>
+                      <Typography>
+                        {selectedPatient.nomComplet}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        Matricule: {selectedPatient.matricule}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid xs={12} md={6}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Lit attribué
+                      </Typography>
+                      <Typography>
+                        Lit {selectedLit.numero}
+                      </Typography>
+                      <Typography color="textSecondary">
+                        Service: {selectedLit.service}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid xs={12}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        Informations médicales
+                      </Typography>
+                      <Typography><strong>Motif:</strong> {motif}</Typography>
+                      <Typography><strong>Diagnostic:</strong> {diagnostic}</Typography>
+                      <Typography><strong>Urgence:</strong> {urgence}</Typography>
+                      <Typography>
+                        <strong>Date d'admission:</strong>{' '}
+                        {dateAdmission?.toLocaleDateString('fr-FR')}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            )}
           </Box>
         );
 
@@ -510,106 +332,70 @@ const PlanifierHospitalisationPage = () => {
     }
   };
 
-  if (showSuccess) {
-    return (
-      <Container maxWidth="md">
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Alert severity="success" sx={{ mb: 3 }}>
-            <Typography variant="h6">Hospitalisation planifiée avec succès !</Typography>
-            <Typography>Redirection vers la liste des hospitalisations...</Typography>
-          </Alert>
-        </Paper>
-      </Container>
-    );
-  }
-
   return (
     <Container maxWidth="lg">
-      <Paper sx={{ p: 4 }}>
-        {/* En-tête */}
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/hospitalisations')}
-            sx={{ mr: 2 }}
-          >
-            Retour
-          </Button>
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Planifier une Hospitalisation
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Processus guidé de planification d'hospitalisation
-            </Typography>
-          </Box>
-        </Box>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Planifier une hospitalisation
+      </Typography>
 
-        {mutation.isError && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            Une erreur est survenue lors de la planification. Veuillez réessayer.
-          </Alert>
-        )}
-
-        {/* Stepper */}
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((step, index) => (
-            <Step key={step.label}>
-              <StepLabel
-                optional={
-                  index === 3 ? (
-                    <Typography variant="caption">Dernière étape</Typography>
-                  ) : null
-                }
-                icon={step.icon}
-              >
-                <Typography variant="h6">{step.label}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {step.description}
-                </Typography>
-              </StepLabel>
-              <StepContent>
-                {getStepContent(index)}
-                <Box sx={{ mb: 2, mt: 3 }}>
-                  <Stack direction="row" spacing={2}>
-                    {index === steps.length - 1 ? (
-                      <Button
-                        variant="contained"
-                        onClick={handleSubmit(onSubmit)}
-                        disabled={isSubmitting}
-                        startIcon={<SaveIcon />}
-                        color={watchedValues.priorite === 'Urgence' ? 'error' : 'primary'}
-                      >
-                        {isSubmitting ? 'Planification...' : 'Planifier l\'hospitalisation'}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        onClick={handleNext}
-                      >
-                        Continuer
-                      </Button>
-                    )}
-                    <Button
-                      disabled={index === 0}
-                      onClick={handleBack}
-                    >
-                      Précédent
-                    </Button>
-                    <Button
-                      onClick={handleReset}
-                      color="error"
-                      variant="outlined"
-                    >
-                      Recommencer
-                    </Button>
-                  </Stack>
-                </Box>
-              </StepContent>
+      <StyledPaper>
+        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
             </Step>
           ))}
         </Stepper>
-      </Paper>
+
+        {renderStepContent()}
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+          <Button
+            disabled={activeStep === 0}
+            onClick={handleBack}
+          >
+            Précédent
+          </Button>
+
+          {activeStep === steps.length - 1 ? (
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Planification...' : 'Confirmer la planification'}
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={handleNext}
+              disabled={!validateStep()}
+            >
+              Suivant
+            </Button>
+          )}
+        </Box>
+      </StyledPaper>
+
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={() => setError(null)}
+      >
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={success}
+        autoHideDuration={6000}
+        onClose={() => setSuccess(false)}
+      >
+        <Alert severity="success" onClose={() => setSuccess(false)}>
+          Hospitalisation planifiée avec succès !
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

@@ -12,7 +12,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 
 const HospitalisationPage = () => {
   const navigate = useNavigate();
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
 
   const { data: hospitalisations, isLoading, isError } = useQuery({
@@ -31,16 +31,19 @@ const HospitalisationPage = () => {
       // Invalider les requêtes pour rafraîchir les listes
       queryClient.invalidateQueries({ queryKey: ['hospitalisations'] });
       queryClient.invalidateQueries({ queryKey: ['lits'] });
-      setNotification("La sortie du patient a été enregistrée avec succès.");
+      console.log("La sortie du patient a été enregistrée avec succès.");
     },
     onError: (error: Error) => {
-      setNotification(`Erreur: ${error.message}`);
+      console.error(`Erreur: ${error.message}`);
     }
   });
 
-  const handleDischarge = (hospitalisationId: string, litId: string) => {
+  const handleDischarge = (hospitalisationId: string | number, litId: string | number) => {
     if (window.confirm("Voulez-vous vraiment enregistrer la sortie de ce patient ?")) {
-      dischargeMutation.mutate({ hospitalisationId, litId });
+      dischargeMutation.mutate({ 
+        hospitalisationId: String(hospitalisationId), 
+        litId: String(litId) 
+      });
     }
   };
 

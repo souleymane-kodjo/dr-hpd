@@ -2,7 +2,6 @@
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import type { GridColDef } from '@mui/x-data-grid';
 import type { Hospitalisation } from '../../types';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Chip } from '@mui/material';
 import { CheckCircleOutline, Visibility } from '@mui/icons-material';
 
@@ -53,7 +52,6 @@ const getColumns = (onDischarge: (hospitalisationId: string | number, litId: str
               icon={<CheckCircleOutline />}
               label="Finaliser la sortie"
               onClick={() => onDischarge(params.row.id, params.row.litId)}
-              color="success"
             />
           );
         }

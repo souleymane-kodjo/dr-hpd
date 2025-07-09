@@ -22,7 +22,8 @@ export default defineConfig({
   // Configuration pour le développement
   server: {
     port: 5173,
-    open: true,
+    host: '0.0.0.0', // Allow external connections (needed for Docker)
+    open: false, // Don't try to open browser in Docker
   },
   // Résolution des paths
   resolve: {

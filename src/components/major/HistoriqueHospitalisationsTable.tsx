@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import {
   Box,
+  Grid,
   Typography,
   TextField,
   MenuItem,
@@ -10,8 +11,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  Grid
+  Button
 } from '@mui/material';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import type { GridColDef } from '@mui/x-data-grid';
@@ -29,7 +29,7 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
     service: '',
     patient: ''
   });
-  
+
   const [detailDialog, setDetailDialog] = useState<{
     open: boolean;
     hospitalisation: HistoriqueHospitalisation | null;
@@ -67,33 +67,33 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
   });
 
   const columns: GridColDef[] = [
-    { 
-      field: 'patientNom', 
-      headerName: 'Patient', 
-      width: 180 
+    {
+      field: 'patientNom',
+      headerName: 'Patient',
+      width: 180
     },
-    { 
-      field: 'dateAdmission', 
-      headerName: 'Date admission', 
+    {
+      field: 'dateAdmission',
+      headerName: 'Date admission',
       width: 130,
       renderCell: (params) => new Date(params.value).toLocaleDateString('fr-FR')
     },
-    { 
-      field: 'dateSortie', 
-      headerName: 'Date sortie', 
+    {
+      field: 'dateSortie',
+      headerName: 'Date sortie',
       width: 130,
       renderCell: (params) => params.value ? new Date(params.value).toLocaleDateString('fr-FR') : '-'
     },
-    { 
-      field: 'dureeHospitalisation', 
-      headerName: 'Durée (j)', 
+    {
+      field: 'dureeHospitalisation',
+      headerName: 'Durée (j)',
       width: 100,
       renderCell: (params) => params.value ? `${params.value} j` : '-'
     },
-    { 
-      field: 'serviceHospitalisation', 
-      headerName: 'Service', 
-      width: 150 
+    {
+      field: 'serviceHospitalisation',
+      headerName: 'Service',
+      width: 150
     },
     {
       field: 'chambre',
@@ -106,8 +106,8 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
       headerName: 'Statut',
       width: 120,
       renderCell: (params) => (
-        <Chip 
-          label={params.value} 
+        <Chip
+          label={params.value}
           color={getStatutColor(params.value)}
           size="small"
         />
@@ -118,8 +118,8 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
       headerName: 'Type sortie',
       width: 120,
       renderCell: (params) => params.value ? (
-        <Chip 
-          label={params.value} 
+        <Chip
+          label={params.value}
           color={getTypeSortieColor(params.value)}
           size="small"
         />
@@ -209,10 +209,10 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
       </div>
 
       {/* Dialog de détails */}
-      <Dialog 
-        open={detailDialog.open} 
-        onClose={() => setDetailDialog({ open: false, hospitalisation: null })} 
-        maxWidth="md" 
+      <Dialog
+        open={detailDialog.open}
+        onClose={() => setDetailDialog({ open: false, hospitalisation: null })}
+        maxWidth="md"
         fullWidth
       >
         <DialogTitle>Détails de l'hospitalisation</DialogTitle>
@@ -241,7 +241,7 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
                 <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" color="textSecondary">Date de sortie</Typography>
                   <Typography variant="body1" gutterBottom>
-                    {detailDialog.hospitalisation.dateSortie 
+                    {detailDialog.hospitalisation.dateSortie
                       ? new Date(detailDialog.hospitalisation.dateSortie).toLocaleDateString('fr-FR')
                       : 'En cours'
                     }
@@ -256,7 +256,7 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
                 <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" color="textSecondary">Durée</Typography>
                   <Typography variant="body1" gutterBottom>
-                    {detailDialog.hospitalisation.dureeHospitalisation 
+                    {detailDialog.hospitalisation.dureeHospitalisation
                       ? `${detailDialog.hospitalisation.dureeHospitalisation} jour(s)`
                       : 'En cours'
                     }
@@ -271,8 +271,8 @@ const HistoriqueHospitalisationsTable = ({ historique }: HistoriqueHospitalisati
                 {detailDialog.hospitalisation.typeSortie && (
                   <Grid xs={12} sm={6}>
                     <Typography variant="subtitle2" color="textSecondary">Type de sortie</Typography>
-                    <Chip 
-                      label={detailDialog.hospitalisation.typeSortie} 
+                    <Chip
+                      label={detailDialog.hospitalisation.typeSortie}
                       color={getTypeSortieColor(detailDialog.hospitalisation.typeSortie)}
                       size="small"
                     />

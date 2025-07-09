@@ -49,7 +49,6 @@ interface NotificationSettingsProps {
 
 const NotificationSettings: React.FC<NotificationSettingsProps> = ({ open, onClose }) => {
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuthStore();
@@ -63,7 +62,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ open, onClo
   const loadPreferences = async () => {
     if (!user) return;
 
-    setLoading(true);
+    setSaving(true);
     setError(null);
     try {
       const prefs = await getNotificationPreferences(user.id);
@@ -72,7 +71,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ open, onClo
       setError('Erreur lors du chargement des préférences');
       console.error('Error loading preferences:', error);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 

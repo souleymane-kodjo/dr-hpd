@@ -17,9 +17,9 @@ import {
 } from '@mui/material';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import type { GridColDef } from '@mui/x-data-grid';
-import { 
+import {
   ExitToApp as ExitIcon,
-  Visibility as VisibilityIcon 
+  Visibility as VisibilityIcon
 } from '@mui/icons-material';
 
 import type { SortiePatient, Hospitalisation } from '../../types';
@@ -34,7 +34,7 @@ const SortiesPatientTable = () => {
     open: false,
     hospitalisation: null
   });
-  
+
   const [detailDialog, setDetailDialog] = useState<{
     open: boolean;
     sortie: SortiePatient | null;
@@ -124,21 +124,21 @@ const SortiesPatientTable = () => {
   };
 
   const columnsEnCours: GridColDef[] = [
-    { 
-      field: 'patientNom', 
-      headerName: 'Patient', 
-      width: 200 
+    {
+      field: 'patientNom',
+      headerName: 'Patient',
+      width: 200
     },
-    { 
-      field: 'dateAdmission', 
-      headerName: 'Date admission', 
+    {
+      field: 'dateAdmission',
+      headerName: 'Date admission',
       width: 150,
       renderCell: (params) => new Date(params.value).toLocaleDateString('fr-FR')
     },
-    { 
-      field: 'motif', 
-      headerName: 'Motif', 
-      flex: 1 
+    {
+      field: 'motif',
+      headerName: 'Motif',
+      flex: 1
     },
     {
       field: 'chambre',
@@ -162,38 +162,38 @@ const SortiesPatientTable = () => {
   ];
 
   const columnsSorties: GridColDef[] = [
-    { 
-      field: 'patientNom', 
-      headerName: 'Patient', 
-      width: 180 
+    {
+      field: 'patientNom',
+      headerName: 'Patient',
+      width: 180
     },
-    { 
-      field: 'dateSortie', 
-      headerName: 'Date sortie', 
+    {
+      field: 'dateSortie',
+      headerName: 'Date sortie',
       width: 120,
       renderCell: (params) => new Date(params.value).toLocaleDateString('fr-FR')
     },
-    { 
-      field: 'heureSortie', 
-      headerName: 'Heure', 
-      width: 100 
+    {
+      field: 'heureSortie',
+      headerName: 'Heure',
+      width: 100
     },
     {
       field: 'typeSortie',
       headerName: 'Type',
       width: 120,
       renderCell: (params) => (
-        <Chip 
-          label={params.value} 
+        <Chip
+          label={params.value}
           color={getTypeSortieColor(params.value)}
           size="small"
         />
       )
     },
-    { 
-      field: 'etatSortie', 
-      headerName: 'État', 
-      width: 120 
+    {
+      field: 'etatSortie',
+      headerName: 'État',
+      width: 120
     },
     {
       field: 'actions',
@@ -269,7 +269,7 @@ const SortiesPatientTable = () => {
               </Alert>
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type="date"
@@ -279,7 +279,7 @@ const SortiesPatientTable = () => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     type="time"
@@ -289,7 +289,7 @@ const SortiesPatientTable = () => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     select
@@ -303,7 +303,7 @@ const SortiesPatientTable = () => {
                     <MenuItem value="Fuite">Fuite</MenuItem>
                   </TextField>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <TextField
                     fullWidth
                     select
@@ -318,7 +318,7 @@ const SortiesPatientTable = () => {
                   </TextField>
                 </Grid>
                 {formData.typeSortie === 'Transfert' && (
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       label="Destination du transfert"
@@ -328,7 +328,7 @@ const SortiesPatientTable = () => {
                     />
                   </Grid>
                 )}
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <TextField
                     fullWidth
                     multiline
@@ -339,7 +339,7 @@ const SortiesPatientTable = () => {
                     placeholder="Médicaments, soins à domicile..."
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <TextField
                     fullWidth
                     label="Rendez-vous de suivi"
@@ -348,7 +348,7 @@ const SortiesPatientTable = () => {
                     placeholder="Date et heure du prochain rendez-vous"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <TextField
                     fullWidth
                     multiline
@@ -367,7 +367,7 @@ const SortiesPatientTable = () => {
           <Button onClick={() => setSortieDialog({ open: false, hospitalisation: null })}>
             Annuler
           </Button>
-          <Button 
+          <Button
             onClick={handleConfirmSortie}
             variant="contained"
             disabled={sortieMutation.isPending}
@@ -384,34 +384,34 @@ const SortiesPatientTable = () => {
           {detailDialog.sortie && (
             <Box sx={{ pt: 1 }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" color="textSecondary">Patient</Typography>
                   <Typography variant="body1" gutterBottom>
                     {detailDialog.sortie.patientNom}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" color="textSecondary">Date et heure de sortie</Typography>
                   <Typography variant="body1" gutterBottom>
                     {new Date(detailDialog.sortie.dateSortie).toLocaleDateString('fr-FR')} à {detailDialog.sortie.heureSortie}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" color="textSecondary">Type de sortie</Typography>
-                  <Chip 
-                    label={detailDialog.sortie.typeSortie} 
+                  <Chip
+                    label={detailDialog.sortie.typeSortie}
                     color={getTypeSortieColor(detailDialog.sortie.typeSortie)}
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2" color="textSecondary">État à la sortie</Typography>
                   <Typography variant="body1" gutterBottom>
                     {detailDialog.sortie.etatSortie}
                   </Typography>
                 </Grid>
                 {detailDialog.sortie.destinationTransfert && (
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <Typography variant="subtitle2" color="textSecondary">Destination du transfert</Typography>
                     <Typography variant="body1" gutterBottom>
                       {detailDialog.sortie.destinationTransfert}
@@ -419,7 +419,7 @@ const SortiesPatientTable = () => {
                   </Grid>
                 )}
                 {detailDialog.sortie.prescriptionsSortie && (
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <Typography variant="subtitle2" color="textSecondary">Prescriptions</Typography>
                     <Typography variant="body1" gutterBottom>
                       {detailDialog.sortie.prescriptionsSortie}
@@ -427,7 +427,7 @@ const SortiesPatientTable = () => {
                   </Grid>
                 )}
                 {detailDialog.sortie.rendezvousSuivi && (
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <Typography variant="subtitle2" color="textSecondary">Rendez-vous de suivi</Typography>
                     <Typography variant="body1" gutterBottom>
                       {detailDialog.sortie.rendezvousSuivi}
@@ -435,14 +435,14 @@ const SortiesPatientTable = () => {
                   </Grid>
                 )}
                 {detailDialog.sortie.commentaires && (
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <Typography variant="subtitle2" color="textSecondary">Commentaires</Typography>
                     <Typography variant="body1" gutterBottom>
                       {detailDialog.sortie.commentaires}
                     </Typography>
                   </Grid>
                 )}
-                <Grid item xs={12}>
+                <Grid xs={12}>
                   <Typography variant="subtitle2" color="textSecondary">Validé par</Typography>
                   <Typography variant="body1" gutterBottom>
                     {detailDialog.sortie.majorValidant} - {new Date(detailDialog.sortie.dateValidation).toLocaleString('fr-FR')}

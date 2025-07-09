@@ -20,6 +20,13 @@ export interface Patient {
   diagnosticActuel: string;
   statut: 'Hospitalisé' | 'Ambulatoire';
   matricule: string;
+  photoUrl?: string; // URL de la photo du patient (optionnel)
+  bloodType?: string; // Groupe sanguin (optionnel)
+  allergies?: string[]; // Liste des allergies (optionnel)
+  medicalHistory?: string; // Antécédents médicaux (optionnel)
+  attendingPhysician?: string; // Médecin traitant (optionnel)
+  roomNumber?: string; // Numéro de chambre (optionnel)
+  attendingPhysicianId?: string; // ID du médecin traitant (optionnel)
 }
 // src/types/dashboard.ts
 export interface KpiData {

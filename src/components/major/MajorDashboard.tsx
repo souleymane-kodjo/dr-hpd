@@ -13,6 +13,7 @@ import {
   LinearProgress,
   Divider
 } from '@mui/material';
+
 import {
   TrendingUp as TrendingUpIcon,
   Assignment as AssignmentIcon,
@@ -43,12 +44,12 @@ interface MajorDashboardProps {
   demandesRecentes: DemandeAdmission[];
 }
 
-const MajorDashboard = ({ 
-  statsAdmissions, 
-  statsHospitalisations, 
-  demandesRecentes 
+const MajorDashboard = ({
+  statsAdmissions,
+  statsHospitalisations,
+  demandesRecentes
 }: MajorDashboardProps) => {
-  
+
   const getPrioriteColor = (priorite: string): 'error' | 'warning' | 'default' => {
     switch (priorite) {
       case 'Critique': return 'error';
@@ -78,14 +79,14 @@ const MajorDashboard = ({
 
       <Grid container spacing={3}>
         {/* Statistiques des admissions */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
                 <AssignmentIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="h6">Demandes d'Admission</Typography>
               </Box>
-              
+
               {statsAdmissions && (
                 <Box>
                   <Box display="flex" justifyContent="space-between" mb={1}>
@@ -106,9 +107,9 @@ const MajorDashboard = ({
                       {statsAdmissions.rejetees}
                     </Typography>
                   </Box>
-                  
+
                   <Divider sx={{ my: 2 }} />
-                  
+
                   <Box>
                     <Box display="flex" justifyContent="space-between" mb={1}>
                       <Typography variant="body2">Taux de validation</Typography>
@@ -116,9 +117,9 @@ const MajorDashboard = ({
                         {statsAdmissions.tauxValidation}%
                       </Typography>
                     </Box>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={statsAdmissions.tauxValidation} 
+                    <LinearProgress
+                      variant="determinate"
+                      value={statsAdmissions.tauxValidation}
                       color="success"
                       sx={{ height: 8, borderRadius: 1 }}
                     />
@@ -130,14 +131,14 @@ const MajorDashboard = ({
         </Grid>
 
         {/* Statistiques des hospitalisations */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
                 <PeopleIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="h6">Hospitalisations</Typography>
               </Box>
-              
+
               {statsHospitalisations && (
                 <Box>
                   <Box display="flex" justifyContent="space-between" mb={1}>
@@ -158,9 +159,9 @@ const MajorDashboard = ({
                       {statsHospitalisations.dureeMoyenne} jours
                     </Typography>
                   </Box>
-                  
+
                   <Divider sx={{ my: 2 }} />
-                  
+
                   <Box>
                     <Box display="flex" justifyContent="space-between" mb={1}>
                       <Typography variant="body2">Taux d'occupation</Typography>
@@ -168,9 +169,9 @@ const MajorDashboard = ({
                         {statsHospitalisations.tauxOccupation}%
                       </Typography>
                     </Box>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={statsHospitalisations.tauxOccupation} 
+                    <LinearProgress
+                      variant="determinate"
+                      value={statsHospitalisations.tauxOccupation}
                       color={statsHospitalisations.tauxOccupation > 80 ? "warning" : "primary"}
                       sx={{ height: 8, borderRadius: 1 }}
                     />
@@ -182,14 +183,14 @@ const MajorDashboard = ({
         </Grid>
 
         {/* Actions rapides */}
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
                 <TrendingUpIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="h6">Actions Rapides</Typography>
               </Box>
-              
+
               <List dense>
                 <ListItem>
                   <ListItemIcon>
@@ -200,7 +201,7 @@ const MajorDashboard = ({
                     secondary={`${demandesRecentes.filter(d => d.priorite === 'Urgente' && d.statut === 'En attente').length} en attente`}
                   />
                 </ListItem>
-                
+
                 <ListItem>
                   <ListItemIcon>
                     <AssignmentIcon color="error" fontSize="small" />
@@ -210,7 +211,7 @@ const MajorDashboard = ({
                     secondary={`${demandesRecentes.filter(d => d.priorite === 'Critique' && d.statut === 'En attente').length} en attente`}
                   />
                 </ListItem>
-                
+
                 <ListItem>
                   <ListItemIcon>
                     <ExitIcon color="info" fontSize="small" />
@@ -220,7 +221,7 @@ const MajorDashboard = ({
                     secondary="À traiter aujourd'hui"
                   />
                 </ListItem>
-                
+
                 <ListItem>
                   <ListItemIcon>
                     <CheckCircleIcon color="success" fontSize="small" />
@@ -236,13 +237,13 @@ const MajorDashboard = ({
         </Grid>
 
         {/* Demandes récentes */}
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Demandes Récentes
               </Typography>
-              
+
               {demandesRecentes.length === 0 ? (
                 <Typography variant="body2" color="textSecondary">
                   Aucune demande récente
@@ -257,13 +258,13 @@ const MajorDashboard = ({
                             <Typography variant="subtitle2">
                               {demande.patientNom}
                             </Typography>
-                            <Chip 
-                              label={demande.priorite} 
+                            <Chip
+                              label={demande.priorite}
                               color={getPrioriteColor(demande.priorite)}
                               size="small"
                             />
-                            <Chip 
-                              label={demande.statut} 
+                            <Chip
+                              label={demande.statut}
                               color={getStatutColor(demande.statut)}
                               size="small"
                             />
