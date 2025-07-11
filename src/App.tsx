@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AuthLayout from './components/layout/AuthLayout';
 import LoginPage from './pages/Auth/LoginPage';
+import VerifyOtpPage from './pages/Auth/VerifyOtpPage';
 import AppLayout from './components/layout/AppLayout';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -19,6 +20,7 @@ import UserManagementPage from './pages/Admin/UserManagementPage';
 import AddUserPage from './pages/Admin/AddUserPage';
 import UserDetailPage from './pages/Admin/UserDetailPage';
 import MajorAdministratifPage from './pages/Admin/MajorAdministratifPage';
+import ProfilPage from './pages/User/ProfilPage';
 import GlobalNotificationHandler from './components/notifications/GlobalNotificationHandler';
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
         {/* Routes publiques avec le AuthLayout */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/verify-otp" element={<VerifyOtpPage />} />
         </Route>
 
         {/* Routes privées avec le AppLayout */}
@@ -42,13 +45,14 @@ function App() {
              <Route path="/hospitalisations" element={<HospitalisationPage />} />
              <Route path="/hospitalisations/planifier" element={<PlanifierHospitalisationPage />} />
             <Route path="/lits" element={<GestionLitsPage />} />
+            <Route path="/profil" element={<ProfilPage />} />
 
             <Route element={<AdminRoute />}>
               <Route path="/admin/utilisateurs" element={<UserManagementPage />} />
               <Route path="/admin/utilisateurs/ajouter" element={<AddUserPage />} />
               <Route path="/admin/utilisateurs/:userId" element={<UserDetailPage />} />
             </Route>
-            
+
             <Route element={<MajorRoute />}>
               <Route path="/admin/major" element={<MajorAdministratifPage />} />
             </Route>

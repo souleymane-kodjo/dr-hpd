@@ -18,6 +18,7 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useNotificationPermission } from '../../store/notificationStore';
+import { useNavigate } from 'react-router-dom';
 import NotificationPanel from '../notifications/NotificationPanel';
 
 const drawerWidth = 240;
@@ -53,6 +54,7 @@ const AppBar = styled(MuiAppBar, {
 
 const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
   const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
   const openMenu = Boolean(anchorEl);
@@ -81,6 +83,11 @@ const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
 
   const handleLogout = () => {
     logout();
+    handleClose();
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profil');
     handleClose();
   };
 
@@ -186,7 +193,7 @@ const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
               </Typography>
               <Divider sx={{ my: 1 }} />
             </MenuItem>
-            <MenuItem onClick={handleClose}>Mon Profil</MenuItem>
+            <MenuItem onClick={handleProfileClick}>Mon Profil</MenuItem>
             <MenuItem onClick={handleLogout}>Déconnexion</MenuItem>
           </Menu>
         </Box>

@@ -1,10 +1,10 @@
 [build]
   # Commande de build
   command = "npm run build"
-  
+
   # Répertoire de sortie
   publish = "dist"
-  
+
   # Variables d'environnement pour le build
   [build.environment]
     NODE_VERSION = "20"
